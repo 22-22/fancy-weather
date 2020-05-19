@@ -1,16 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  color: textcolor;
+  box-sizing: border-box;
+}
+
 body {
-  background-color: navy;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  height: 100vh;
-  padding: 0;
-  margin: 0;
-}
-body h1 {
-  font-size: 72px;
-  margin: 0;
+  /* height: 100vh; */
+  background-repeat: no-repeat;
+  /* background-size: 100% 100vh; */
 }
 
 /*# sourceMappingURL=style.css.map */

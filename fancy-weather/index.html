@@ -1,12 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fancy weather</title>
 </head>
+
 <body>
-    <div id="day"></div>
-    <div id="time"></div>
+    <header class="header">
+        <div class="header__btns">
+            <button class="btn btn--image">Image</button>
+            <div class="dropdown">
+                <ul>
+                    <li>En<i aria-hidden="true"></i>
+                        <div class="triangle"></div>
+                        <ul>
+                            <li><i class="flag flag-de">
+                                </i> <span class="active">En</span></li>
+                            <li><i class="flag flag-usa">
+                                </i> <span>Ru</span></li>
+                                <li><i class="flag flag-usa">
+                                </i> <span>Be</span></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn--cels">°C</button>
+            <button class="btn btn--faren">°F</button>
+        </div>
+        <div class="search">
+            <input type="text" class="search__input">
+            <button class="search__mic"></button>
+            <button class="btn search__btn">search</button>
+        </div>
+    </header>
+    <main class="main">
+        <div class="weather">
+            <p class="location"></p>
+            <p id="day"></p>
+            <p id="time"></p>
+            <p class="weather__temp-today"></p>
+            <img src="/#" alt="" class="weather__icon"></img>
+            <div class="weather__details"></div>
+            <div class="weather__forecast">
+                <p class="forecast__day"></p>
+                <p class="forecast__temp"></p>
+                <img src="/#" alt="" class="forecast__icon">
+            </div>
+            <div class="weather__forecast">
+                <p class="forecast__day"></p>
+                <p class="forecast__temp"></p>
+                <img src="/#" alt="" class="forecast__icon">
+            </div>
+            <div class="weather__forecast">
+                <p class="forecast__day"></p>
+                <p class="forecast__temp"></p>
+                <img src="/#" alt="" class="forecast__icon">
+            </div>
+        </div>
+        <div class="map">
+            <p class="latitude"></p>
+            <p class="longtitude"></p>
+        </div>
+    </main>
 </body>
+
 </html>

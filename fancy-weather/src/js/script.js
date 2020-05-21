@@ -1,10 +1,29 @@
-import { locationKey, imageKey } from '../../api-keys'
+import { locationKey, imageKey, weatherKey } from '../../api-keys'
 
-function getLocation() {
+async function getLocation() {
     const url = `https://ipinfo.io/json?token=${locationKey}`;
-    fetch(url)
+    return fetch(url)
         .then((response) => response.json())
-        .then(data => console.log(data))
+}
+
+async function getWeather(location) {
+    const coordinates = location.split(',')
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${coordinates[0]}&lon=${coordinates[1]}&lang=ru&units=metric&APPID=a9a3a62789de80865407c0452e9d1c27`;
+    // const url = `https://api.openweathermap.org/data/2.5/forecast?q=Minsk&lang=ru&units=metric&APPID=a9a3a62789de80865407c0452e9d1c27`;
+    return fetch(url)
+        .then((response) => response.json())
+        .then(data => {
+            const entriesPerDay = 8;
+            const daysToDisplay = 3;
+            const entriesToCheck = entriesPerDay * daysToDisplay;
+            const dataDaily = data.list.filter((entry, idx) => {
+                if (idx < entriesToCheck) {
+                    return entry.dt_txt.includes('18:00:00');
+                }
+            });
+            const dataNow = data.list[0];
+            console.log(dataNow)
+        })
 }
 
 function getImage() {
@@ -34,8 +53,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
 setInterval(getTimeNow, 1000);
 
+async function init() {
+    try {
+        const { loc, city } = await getLocation();
+        const { current } = await getWeather(loc);
+    } catch (err) {
+        console.log(err);
+    }
+}
 
-getLocation();
+init();
 // getImage();
 
 

@@ -1,22 +1,31 @@
 {
   "name": "fancy-weather",
   "version": "1.0.0",
-  "description": "",
   "main": "webpack.config.js",
   "scripts": {
     "style": "sass --watch src/sass/style.scss src/sass/style.css",
     "dev": "webpack --mode development",
-    "prod": "webpack --mode production"
+    "prod": "webpack --mode production",
+    "lint": "node node_modules/eslint/bin/eslint.js ./src/js/script.js",
+    "test": "jest"
+  },
+  "jest": {
+    "verbose": true
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.9.6",
+    "@babel/plugin-transform-runtime": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "babel-loader": "^8.1.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "copy-webpack-plugin": "^6.0.0",
     "css-loader": "^3.5.3",
+    "eslint": "^7.0.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
     "file-loader": "^6.0.0",
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.3.0",
@@ -27,6 +36,8 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@babel/runtime": "^7.9.6",
     "node-sass": "^4.14.1"
-  }
+  },
+  "description": ""
 }

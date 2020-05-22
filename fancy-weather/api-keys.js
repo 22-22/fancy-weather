@@ -1,5 +1,6 @@
 const locationKey = '7e9a9770682175';
 const imageKey = 'ywh_l42oBL8NSTrbDisyZi27RBObZ0nBYylQzhQ2YzE';
-const weatherKey = 'f85a03b1f89b77c49b1f6b1f0e017ab9';
+const weatherKey = 'bc7c3c26aa634facb7e073e46eaf4c50';
+const geoCodingKey = '43bd00293c384c5688434a5d7ada152c';
 
-export {locationKey, imageKey, weatherKey};
+export {locationKey, imageKey, weatherKey, geoCodingKey};

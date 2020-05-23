@@ -12,9 +12,15 @@ class State {
 let state = new State('en', 'M')
 
 document.querySelector('.btn--fahr').addEventListener('click', () => {
- state.tempType = 'I';
- // local storage
- tempCurr.textContent = tempCurr.textContent * 1.8 + 32;
+  state.tempType = 'I';
+  // local storage
+  tempCurr.textContent = tempCurr.textContent * 1.8 + 32;
+})
+
+document.querySelector('.btn--cels').addEventListener('click', () => {
+  state.tempType = 'M';
+  // local storage
+  tempCurr.textContent = tempCurr.textContent - 32 / 1.8;
 })
 
 
@@ -24,22 +30,54 @@ async function getLocation() {
     .then((response) => response.json());
 }
 
+async function getCoordinates(query) {
+  const url = `https://api.opencagedata.com/geocode/v1/json?q=${query}&key=${geoCodingKey}`;
+  return fetch(url)
+    .then((response) => response.json())
+    .then((data) => data.results[0].geometry);
+}
+
+// form search
+document.querySelector('.search').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const keyWord = document.querySelector('.search__input').value;
+  displayNewWeatherInfo(keyWord);
+});
+
+async function displayNewWeatherInfo(keyWord) {
+  try {
+    const loc = await getCoordinates(keyWord);
+    const { results } = await getCountryName(loc);
+    // console.log(results[0].components.country);
+    const dataCurr = await getCurrentWeather(loc);
+    const dataThree = await getThreeDaysWeather(loc);
+
+    const { threeDaysTemp, threeDaysWeekdays } = filterThreeDaysWeather(dataThree);
+
+    // console.log(`Temp: ${dataCurr.data[0].temp}°, wind: ${dataCurr.data[0].wind_spd} m/s, ${dataCurr.data[0].weather.description}, feels like ${dataCurr.data[0].app_temp}, humidity: ${dataCurr.data[0].rh}%`);
+
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 async function getCountryName(location) {
-  const coordinates = location.split(',');
-  const url = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates[0]}+${coordinates[1]}&language=be&key=${geoCodingKey}`;
+  const coordinates = typeof location === 'string' ? location.split(',') : Object.values(location);
+  const url = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates[0]}+${coordinates[1]}&language=en&key=${geoCodingKey}`;
   return fetch(url)
     .then((response) => response.json())
 }
 
 async function getCurrentWeather(location) {
-  const coordinates = location.split(',');
-  const url = `https://api.weatherbit.io/v2.0/current?lat=${coordinates[0]}&lon=${coordinates[1]}&lang=be&units=M&key=${weatherKey}`;
+  const coordinates = typeof location === 'string' ? location.split(',') : Object.values(location);
+  const url = `https://api.weatherbit.io/v2.0/current?lat=${coordinates[0]}&lon=${coordinates[1]}&lang=en&units=M&key=${weatherKey}`;
   return fetch(url)
     .then((response) => response.json());
 }
 
 async function getThreeDaysWeather(location) {
-  const coordinates = location.split(',');
+  const coordinates = typeof location === 'string' ? location.split(',') : Object.values(location);
   const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${coordinates[0]}&lon=${coordinates[1]}&lang=be&units=M&key=${weatherKey}`;
   return fetch(url)
     .then((response) => response.json());
@@ -54,7 +92,7 @@ function filterThreeDaysWeather(data) {
       threeDaysWeekdays.push(new Date(day.valid_date).toLocaleDateString('en', { weekday: 'long' }));
     }
   });
-  return {threeDaysTemp, threeDaysWeekdays};
+  return { threeDaysTemp, threeDaysWeekdays };
 }
 
 // function renderWeatherInfo(dataCurr, threeDaysTemp) {
@@ -95,18 +133,18 @@ async function init() {
     // console.log(results[0].components.country);
     const dataCurr = await getCurrentWeather(loc);
     const dataThree = await getThreeDaysWeather(loc);
-    
-    const {threeDaysTemp, threeDaysWeekdays} = filterThreeDaysWeather(dataThree);
-    
-    renderWeatherInfo(dataCurr, threeDaysTemp);
-    // console.log(data[0].temp, data[0].wind_spd, data[0].weather.description, data[0].app_temp, data[0].rh);
+
+    const { threeDaysTemp, threeDaysWeekdays } = filterThreeDaysWeather(dataThree);
+
+    // renderWeatherInfo(dataCurr, threeDaysTemp);
+    // console.log(`Temp: ${dataCurr.data[0].temp}°, wind: ${dataCurr.data[0].wind_spd} m/s, ${dataCurr.data[0].weather.description}, feels like ${dataCurr.data[0].app_temp}, humidity: ${dataCurr.data[0].rh}%`);
 
   } catch (err) {
     console.log(err);
   }
 }
 
-init();
+// init();
 // getImage();
 
 

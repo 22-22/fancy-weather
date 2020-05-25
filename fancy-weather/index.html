@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fancy weather</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -20,7 +22,7 @@
                                 </i> <span class="active">En</span></li>
                             <li><i class="flag flag-usa">
                                 </i> <span>Ru</span></li>
-                                <li><i class="flag flag-usa">
+                            <li><i class="flag flag-usa">
                                 </i> <span>Be</span></li>
                         </ul>
                     </li>
@@ -59,11 +61,16 @@
                 <img src="/#" alt="" class="forecast__icon">
             </div>
         </div>
-        <div class="map">
+        <div id="map">
             <p class="latitude"></p>
             <p class="longtitude"></p>
         </div>
     </main>
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css" />
 </body>
 
 </html>

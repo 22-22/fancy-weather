@@ -1,4 +1,4 @@
-import { locationKey, imageKey, weatherKey, geoCodingKey } from '../../api-keys';
+import { locationKey, imageKey, weatherKey, geoCodingKey, mapKey } from '../../api-keys';
 
 const tempCurr = document.querySelector('.weather__temp-today');
 const tempThreeDays = document.querySelectorAll('.forecast__temp');
@@ -23,7 +23,6 @@ document.querySelector('.btn--cels').addEventListener('click', () => {
   tempCurr.textContent = tempCurr.textContent - 32 / 1.8;
 })
 
-
 async function getLocation() {
   const url = `https://ipinfo.io/json?token=${locationKey}`;
   return fetch(url)
@@ -42,11 +41,38 @@ document.querySelector('.search').addEventListener('submit', (e) => {
   e.preventDefault();
   const keyWord = document.querySelector('.search__input').value;
   displayNewWeatherInfo(keyWord);
+
 });
+
+// initialize the map
+mapboxgl.accessToken = mapKey;
+let map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [-74.5, 40],
+  zoom: 9
+});
+
+function showMapSearch(location) {
+  const coordinates = typeof location === 'string' ? location.split(',') : Object.values(location);
+  map.flyTo({
+    center: [coordinates[1], coordinates[0]],
+    essential: true
+  });
+
+  // let marker = document.createElement('div');
+  // marker.className = 'marker'
+  new mapboxgl.Marker()
+    .setLngLat([coordinates[1], coordinates[0]])
+    .addTo(map);
+
+    console.log(map)
+}
 
 async function displayNewWeatherInfo(keyWord) {
   try {
     const loc = await getCoordinates(keyWord);
+    showMapSearch(loc);
     const { results } = await getCountryName(loc);
     // console.log(results[0].components.country);
     const dataCurr = await getCurrentWeather(loc);
@@ -55,7 +81,6 @@ async function displayNewWeatherInfo(keyWord) {
     const { threeDaysTemp, threeDaysWeekdays } = filterThreeDaysWeather(dataThree);
 
     // console.log(`Temp: ${dataCurr.data[0].temp}°, wind: ${dataCurr.data[0].wind_spd} m/s, ${dataCurr.data[0].weather.description}, feels like ${dataCurr.data[0].app_temp}, humidity: ${dataCurr.data[0].rh}%`);
-
 
   } catch (err) {
     console.log(err);
@@ -143,6 +168,11 @@ async function init() {
     console.log(err);
   }
 }
+
+
+
+
+
 
 // init();
 // getImage();

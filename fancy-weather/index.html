@@ -32,7 +32,7 @@
             <button class="btn btn--fahr">°F</button>
         </div>
         <form class="search" action="" method="GET">
-            <input type="text" class="search__input">
+            <input type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city">
             <span class="search__mic"></span>
             <button class="btn search__btn">search</button>
         </form>
@@ -43,27 +43,32 @@
             <p id="day"></p>
             <p id="time"></p>
             <p class="weather__temp-today"></p>
-            <img src="/#" alt="" class="weather__icon"></img>
-            <div class="weather__details"></div>
-            <div class="weather__forecast">
-                <p class="forecast__day"></p>
-                <p class="forecast__temp"></p>
-                <img src="/#" alt="" class="forecast__icon">
+            <div class="weather__icon" id="weather-icon-today"></div>
+            <div class="weather__details">
+                <div class="weather-today-descript"></div>
+                <div class="weather-today-feels">Feels like: </div>
+                <div class="weather-today-wind"></div>
+                <div class="weather-today-humid"></div>
             </div>
             <div class="weather__forecast">
                 <p class="forecast__day"></p>
                 <p class="forecast__temp"></p>
-                <img src="/#" alt="" class="forecast__icon">
+                <div class="forecast__icon" id="forecast-icon-1"></div>
             </div>
             <div class="weather__forecast">
                 <p class="forecast__day"></p>
                 <p class="forecast__temp"></p>
-                <img src="/#" alt="" class="forecast__icon">
+                <div class="forecast__icon" id="forecast-icon-2"></div>
+            </div>
+            <div class="weather__forecast">
+                <p class="forecast__day"></p>
+                <p class="forecast__temp"></p>
+                <div class="forecast__icon" id="forecast-icon-3"></div>
             </div>
         </div>
         <div id="map">
-            <p class="latitude"></p>
-            <p class="longtitude"></p>
+            <p class="lat"></p>
+            <p class="lng"></p>
         </div>
     </main>
     <script

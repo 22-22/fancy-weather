@@ -1,24 +1,25 @@
 $bgcolor: navy;
-$textcolor: rgb(36, 35, 35);
+$textcolor: white;
 
 * {
     margin: 0;
     padding: 0;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    color: textcolor;
     box-sizing: border-box;
   }
 
 body {
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 .header {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin: 3rem 0;
+  margin: 40px 90px 0;
   width: 100%;
 }
 
@@ -26,8 +27,78 @@ body {
   display: flex;
 }
 
+.search__input {
+  background: rgba(76, 82, 85, 0.4);
+  border: 1px solid rgba(228, 227, 227, 0.2);
+  width: 274px;
+  height: 44px;
+  caret-color: navy; 
+}
+
+.search__input::placeholder {
+  font-size: 14px;
+  line-height: 17px;
+  display: flex;
+  align-items: center;
+}
+
+.search__btn {
+  background: rgba(174, 181, 185, 0.5);
+  border-radius: 5px;
+  width: 100px;
+  height: 44px;
+  border: 0;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  text-transform: uppercase;
+  color: $textcolor;
+}
+
+.btn--cels {
+  width: 44px;
+  height: 44px;
+  background: rgba(174, 181, 185, 0.5);
+  border: 0;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  text-transform: uppercase;
+  color: $textcolor;
+}
+
+.btn--fahr {
+  width: 44px;
+  height: 44px;
+  background: rgba(76, 82, 85, 0.4); 
+  border: 0;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  text-transform: uppercase;
+  color: $textcolor;
+}
+
+.btn--image {
+  width: 44px;
+  height: 44px;
+  background: rgba(174, 181, 185, 0.5);
+  border: 0;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  text-transform: uppercase;
+  color: $textcolor;
+}
+
+.btn {
+  cursor: pointer;
+}
+
+/*******************DROPDOWN***************************/
+
 .dropdown {
-  margin-left: 1rem;
+  margin: 0 1rem;
   ul {
     margin:0;
     padding:0;
@@ -110,18 +181,102 @@ body {
   overflow: hidden;
 }
 
-.weather__icon, .forecast__icon {
-  width: 50px;
-  height: 50px;
-  background-size: cover;
+/********************MAIN************************/
+
+
+.main__container {
+  margin: 60px 90px 95px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location {
+  font-size: 44px;
+  line-height: 54px;
+  text-transform: uppercase;
+  color: $textcolor;
+}
+
+#day, #time {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 29px;
+  color: $textcolor;
+}
+
+.weather-forecast-container {
+  display: flex;
+  .forecast {
+    width: 28%;
+    margin-right: 3%;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 27px;
+    color: $textcolor;
+    text-transform: uppercase;
+    &:last-child {
+      margin-right: 0;
+    }
+    .forecast__day {
+      text-align: center;
+    }
+    .forecast__info {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      // .forecast__temp {
+      //   line-height: 55px;
+      // }
+      .forecast__icon {
+        width: 70px;
+        height: 70px;
+        background-size: cover;
+        display: inline-block;
+      }
+    }
+  }
+}
+
+.weather-today {
+  display: flex;
+  .weather-today__temp {
+    font-size: 200px;
+    line-height: 373px;
+    text-transform: uppercase;
+    color: $textcolor;
+    font-weight: bold;
+  }
+  .weather-today__details {
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 37px;
+    color: $textcolor;
+    text-transform: uppercase;
+    #weather-icon-today {
+      width: 162px;
+      height: 102px;
+      background-size: cover;
+      margin-bottom: 50px;
+    }
+    .weather-today-feels:before {
+      content: 'Feels like: ';
+    }
+  }
 }
 
 #map { 
-  position: absolute;
-  // top: 0;
-  // bottom: 0;
   width: 200px;
   height: 200px;
+}
+
+.lat, .lng {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+  text-align: right;
+  text-transform: capitalize;
+  color: $textcolor;
 }
 
 

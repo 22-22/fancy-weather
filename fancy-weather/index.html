@@ -9,10 +9,10 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css" rel="stylesheet" />
 </head>
 
-<body>
+<body >
     <header class="header">
         <div class="header__btns">
-            <button class="btn btn--image">Image</button>
+            <button class="btn btn--image">Img</button>
             <div class="dropdown">
                 <ul>
                     <li>En<i aria-hidden="true"></i>
@@ -38,37 +38,51 @@
         </form>
     </header>
     <main class="main">
-        <div class="weather">
-            <p class="location"></p>
-            <p id="day"></p>
-            <p id="time"></p>
-            <p class="weather__temp-today"></p>
-            <div class="weather__icon" id="weather-icon-today"></div>
-            <div class="weather__details">
-                <div class="weather-today-descript"></div>
-                <div class="weather-today-feels">Feels like: </div>
-                <div class="weather-today-wind"></div>
-                <div class="weather-today-humid"></div>
+        <div class="main__container">
+            <div class="weather">
+                <p class="location"></p>
+                <span id="day"></span>
+                <span id="time"></span>
+                <div class="weather-today">
+                    <div class="weather-today__temp"></div>
+                    <div class="weather-today__details">
+                        <div id="weather-icon-today"></div>
+                        <div class="weather-today-descript"></div>
+                        <div class="weather-today-feels"></div>
+                        <div class="weather-today-wind"></div>
+                        <div class="weather-today-humid"></div>
+                    </div>
+                </div>
+                <div class="weather-forecast-container">
+                    <div class="forecast">
+                        <p class="forecast__day"></p>
+                        <div class="forecast__info">
+                            <div class="forecast__temp"></div>
+                            <div class="forecast__icon" id="forecast-icon-1"></div>
+                        </div>
+                    </div>
+                    <div class="forecast">
+                        <p class="forecast__day"></p>
+                        <div class="forecast__info">
+                            <div class="forecast__temp"></div>
+                            <div class="forecast__icon" id="forecast-icon-2"></div>
+                        </div>
+                    </div>
+                    <div class="forecast">
+                        <p class="forecast__day"></p>
+                        <div class="forecast__info">
+                            <div class="forecast__temp"></div>
+                            <div class="forecast__icon" id="forecast-icon-3"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="weather__forecast">
-                <p class="forecast__day"></p>
-                <p class="forecast__temp"></p>
-                <div class="forecast__icon" id="forecast-icon-1"></div>
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="lat"></div>
+                <div class="lng"></div>
             </div>
-            <div class="weather__forecast">
-                <p class="forecast__day"></p>
-                <p class="forecast__temp"></p>
-                <div class="forecast__icon" id="forecast-icon-2"></div>
-            </div>
-            <div class="weather__forecast">
-                <p class="forecast__day"></p>
-                <p class="forecast__temp"></p>
-                <div class="forecast__icon" id="forecast-icon-3"></div>
-            </div>
-        </div>
-        <div id="map">
-            <p class="lat"></p>
-            <p class="lng"></p>
         </div>
     </main>
     <script

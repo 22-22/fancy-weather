@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fancy weather</title>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css" rel="stylesheet" />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css' rel='stylesheet' />
 </head>
 
-<body >
+<body>
     <header class="header">
         <div class="header__btns">
             <button class="btn btn--image">Img</button>
@@ -18,11 +18,11 @@
                     <li>En<i aria-hidden="true"></i>
                         <div class="triangle"></div>
                         <ul>
-                            <li><i class="flag flag-de">
+                            <li id="en"><i class="flag flag-en">
                                 </i> <span class="active">En</span></li>
-                            <li><i class="flag flag-usa">
+                            <li id="ru"><i class="flag flag-ru">
                                 </i> <span>Ru</span></li>
-                            <li><i class="flag flag-usa">
+                            <li id="be"><i class="flag flag-be">
                                 </i> <span>Be</span></li>
                         </ul>
                     </li>
@@ -32,9 +32,8 @@
             <button class="btn btn--fahr">°F</button>
         </div>
         <form class="search" action="" method="GET">
-            <input type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city">
-            <span class="search__mic"></span>
-            <button class="btn search__btn">search</button>
+            <input data-i18n="placeholder" type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city"><button data-i18n="search" class="btn search__btn">search</button>
+            <img src="./src/assets/mic.svg" class="search__mic" alt="mic"></img>
         </form>
     </header>
     <main class="main">
@@ -48,28 +47,28 @@
                     <div class="weather-today__details">
                         <div id="weather-icon-today"></div>
                         <div class="weather-today-descript"></div>
-                        <div class="weather-today-feels"></div>
-                        <div class="weather-today-wind"></div>
-                        <div class="weather-today-humid"></div>
+                        <span data-i18n="feel">Feels like </span><div class="weather-today-feels"></div>
+                        <div data-i18n="wind" class="weather-today-wind"></div><span data-i18n="ms"> m/s</span>
+                        <div data-i18n="humidity" class="weather-today-humid"></div>
                     </div>
                 </div>
                 <div class="weather-forecast-container">
                     <div class="forecast">
-                        <p class="forecast__day"></p>
+                        <p data-i18n="day" class="forecast__day"></p>
                         <div class="forecast__info">
                             <div class="forecast__temp"></div>
                             <div class="forecast__icon" id="forecast-icon-1"></div>
                         </div>
                     </div>
                     <div class="forecast">
-                        <p class="forecast__day"></p>
+                        <p data-i18n="day" class="forecast__day"></p>
                         <div class="forecast__info">
                             <div class="forecast__temp"></div>
                             <div class="forecast__icon" id="forecast-icon-2"></div>
                         </div>
                     </div>
                     <div class="forecast">
-                        <p class="forecast__day"></p>
+                        <p data-i18n="day" class="forecast__day"></p>
                         <div class="forecast__info">
                             <div class="forecast__temp"></div>
                             <div class="forecast__icon" id="forecast-icon-3"></div>
@@ -80,16 +79,11 @@
             </div>
             <div class="map-container">
                 <div id="map"></div>
-                <div class="lat"></div>
-                <div class="lng"></div>
+                <div data-i18n="lat" class="lat"></div>
+                <div data-i18n="lng" class="lng"></div>
             </div>
         </div>
     </main>
-    <script
-        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
-    <link rel="stylesheet"
-        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
-        type="text/css" />
 </body>
 
 </html>

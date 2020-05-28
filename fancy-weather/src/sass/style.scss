@@ -20,31 +20,40 @@ body {
   flex-wrap: wrap;
   justify-content: space-between;
   margin: 40px 90px 0;
-  width: 100%;
 }
 
 .header__btns {
   display: flex;
+  flex-wrap: wrap;
 }
 
+
+.search {
+  position: relative;
+
+}
 .search__input {
   background: rgba(76, 82, 85, 0.4);
-  border: 1px solid rgba(228, 227, 227, 0.2);
   width: 274px;
   height: 44px;
   caret-color: navy; 
+  border-radius: 5px 0 0 5px;
+  cursor: text;
+  font-size: 16px;
+  color: $textcolor;
+  outline: 0;
+  border: 0;
 }
 
 .search__input::placeholder {
   font-size: 14px;
   line-height: 17px;
-  display: flex;
-  align-items: center;
+  padding-left: 10px;
 }
 
 .search__btn {
   background: rgba(174, 181, 185, 0.5);
-  border-radius: 5px;
+  border-radius: 0 5px 5px 0;
   width: 100px;
   height: 44px;
   border: 0;
@@ -53,6 +62,24 @@ body {
   line-height: 17px;
   text-transform: uppercase;
   color: $textcolor;
+  outline: 0;
+  padding-top: 1px;
+}
+
+.search__mic {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 114px;
+  top: 7px;
+  // opacity: 0.9;
+  cursor: pointer;
+  transform: scale(0.8);
+  transition: all 0.3s linear;
+  &:hover {
+    background-color: lightblue;
+    border-radius: 50%;
+  }
 }
 
 .btn--cels {
@@ -61,10 +88,12 @@ body {
   background: rgba(174, 181, 185, 0.5);
   border: 0;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 17px;
   text-transform: uppercase;
   color: $textcolor;
+  border-radius: 5px 0 0 5px;
+  outline: 0;
 }
 
 .btn--fahr {
@@ -73,10 +102,12 @@ body {
   background: rgba(76, 82, 85, 0.4); 
   border: 0;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 17px;
   text-transform: uppercase;
   color: $textcolor;
+  border-radius: 0 5px 5px 0;
+  outline: 0;
 }
 
 .btn--image {
@@ -84,21 +115,41 @@ body {
   height: 44px;
   background: rgba(174, 181, 185, 0.5);
   border: 0;
+  outline: 0;
   font-weight: bold;
   font-size: 14px;
   line-height: 17px;
   text-transform: uppercase;
   color: $textcolor;
+  margin-right: 10px;
+  border-radius: 5px;
 }
 
 .btn {
   cursor: pointer;
+  transition: all 0.3s linear;
+  &:hover {
+    background: lightblue;
+  }
 }
 
 /*******************DROPDOWN***************************/
 
 .dropdown {
-  margin: 0 1rem;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(174, 181, 185, 0.5);
+  border: 0;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 17px;
+  text-transform: uppercase;
+  color: $textcolor;
+  margin-right: 10px;
+  border-radius: 5px;
   ul {
     margin:0;
     padding:0;
@@ -108,7 +159,6 @@ body {
   }
   li {
     cursor: pointer;
-    padding-bottom:10px;
     ul {
       display: none;
       li {
@@ -179,14 +229,29 @@ body {
   position: relative;
   top: 2px;
   overflow: hidden;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.flag-ru {
+  background-image: url('../assets/ru.png'); 
+}
+.flag-en {
+  background-image: url('../assets/en.png');
+}
+.flag-be {
+  background-image: url('../assets/be.png');
+  background-position: left;
 }
 
 /********************MAIN************************/
 
 
 .main__container {
-  margin: 60px 90px 95px;
+  margin: 5% 8%;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
 }
@@ -205,8 +270,13 @@ body {
   color: $textcolor;
 }
 
+.weather {
+  margin-bottom: 30px;
+}
+
 .weather-forecast-container {
   display: flex;
+  flex-wrap: wrap;
   .forecast {
     width: 28%;
     margin-right: 3%;
@@ -225,9 +295,6 @@ body {
       display: flex;
       justify-content: space-evenly;
       align-items: center;
-      // .forecast__temp {
-      //   line-height: 55px;
-      // }
       .forecast__icon {
         width: 70px;
         height: 70px;
@@ -240,6 +307,7 @@ body {
 
 .weather-today {
   display: flex;
+  flex-wrap: wrap;
   .weather-today__temp {
     font-size: 200px;
     line-height: 373px;
@@ -255,38 +323,36 @@ body {
     text-transform: uppercase;
     #weather-icon-today {
       width: 162px;
-      height: 102px;
+      height: 142px;
       background-size: cover;
-      margin-bottom: 50px;
+      margin-bottom: 20px;
     }
-    .weather-today-feels:before {
-      content: 'Feels like: ';
+    .weather-today-wind {
+      display: inline-block;
     }
   }
 }
 
 #map { 
-  width: 200px;
-  height: 200px;
+  width: 400px;
+  height: 400px;
+  // position: absolute;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
+  margin-bottom: 15px;
 }
 
 .lat, .lng {
   font-weight: 600;
   font-size: 20px;
   line-height: 30px;
-  text-align: right;
+  text-align: left;
   text-transform: capitalize;
   color: $textcolor;
 }
 
-
-// .flag-de {
-// background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAAAPUlEQVQ4T+3HMQ0AIBTE0NOHM8x9B7hgh71bIWGieUvze1m7kHGBr/AVvsJX+EpmP5dV5/gKX+ErfIUvVDYcX2NMxQC8PAAAAABJRU5ErkJggg==');
-//   background-size: cover;
-//   background-position: center center;
-// // }
-// .flag-usa {
-//   background-size: cover;
-//   background-position: center center;
-//   background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAABhUlEQVQ4T2Ows82PjGixsc4LD2tysC/09Kjw8622tyuICG8u0w/cpGSCBzF4e1VmZkzw9anOzOj38a4KCW4IC22ECHYk1l9tn4gHMeTlTnZxLikvm+XiUpKW2hvgX+vnV5OVOQEoOGfOtv94AYOzU3Fd7XxHh6Lq6rlurqUx0W0J8Z1AnbW18yotonaYuOJBDBXls4A+bGpaBCTz86YEBtQCvVBSPAPIbY0oP1/aiAcxABU1Ny+2tclvbFjo5FgUF9uenNwNDLnmpkWEnV1TPRcY1O1tS4H6i4umA/0MDK2K8tlAwRqHpP1uoXgQKKraWpcClTY3LQZaCLQ5NaUX5OaWJY3++SeTC/AgBmA4AXUClUJs9ver8fKsAAYEUJCws4G21dXNB1oFdD/Qz8DQTk4C+bm2dn6DZ9bRiDQ8iAEYt8CoBpK5YBIYw0AEEZwSXX4oMB4PYoC6gCzAcDqrjGzEsMfen2xEmbMv1rSTjRi26dqRjShz9o2+6WQjBrSShQSkZAIADvW/HLrLY6cAAAAASUVORK5CYII=');
-// }
+@media (max-width: 767px)  {
+  .main__container {
+      flex-direction: column;
+  }
+}
+  

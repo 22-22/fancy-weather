@@ -29,7 +29,7 @@ function findNumber(str) {
 
 document.querySelector('.btn--fahr').addEventListener('click', () => {
   const lang = localStorage.getItem('lang');
-  
+
   let translationObj;
   if (lang === 'be') {
     translationObj = translationBe;
@@ -53,9 +53,9 @@ document.querySelector('.btn--fahr').addEventListener('click', () => {
 })
 
 document.querySelector('.btn--cels').addEventListener('click', () => {
-  
+
   const lang = localStorage.getItem('lang');
-  
+
   let translationObj;
   if (lang === 'be') {
     translationObj = translationBe;
@@ -97,7 +97,6 @@ document.querySelector('.search').addEventListener('submit', (e) => {
   e.preventDefault();
   const keyWord = document.querySelector('.search__input').value;
   displayNewWeatherInfo(keyWord);
-
 });
 
 // initialize the map
@@ -207,24 +206,25 @@ function makeTranslation(translationObject) {
   document.querySelector('.search__input').placeholder = translationObject.placeholder;
 }
 
-document.querySelector('#ru').addEventListener('click', function() {
+document.querySelector('#ru').addEventListener('click', function () {
   makeTranslation(translationRu);
   localStorage.setItem('lang', 'ru');
   // document.querySelector('.lang-active').textContent = 'Ru';
 })
 
-document.querySelector('#en').addEventListener('click', function() {
+document.querySelector('#en').addEventListener('click', function () {
   makeTranslation(translationEn);
   localStorage.setItem('lang', 'en');
- // document.querySelector('.lang-active').textContent = 'En';
+  // document.querySelector('.lang-active').textContent = 'En';
 })
-document.querySelector('#be').addEventListener('click', function() {
+document.querySelector('#be').addEventListener('click', function () {
   makeTranslation(translationBe);
   localStorage.setItem('lang', 'be');
   // document.querySelector('.lang-active').textContent = 'Be';
 })
 
-function renderWeatherInfo(placeName, dataWeatherCurrent, threeDaysTemp, threeDaysWeekdays, threeDaysIcons, location, image) {
+function renderWeatherInfo(placeName, dataWeatherCurrent, weatherThreeDays, location, image) {
+  const { threeDaysTemp, threeDaysWeekdays, threeDaysIcons } = filterWeatherThreeDays(weatherThreeDays);
 
   const lang = localStorage.getItem('lang');
   let translationObj;
@@ -241,7 +241,10 @@ function renderWeatherInfo(placeName, dataWeatherCurrent, threeDaysTemp, threeDa
   const coordinates = renderLocation(location);
   const degreesMinutes = splitCoordinates(coordinates);
 
+  initMap(location);
+
   document.querySelector('.search__input').placeholder = translationObj.placeholder;
+  document.querySelector('.search__btn').textContent = translationObj.search;
 
   document.querySelector('.lat').textContent = `${translationObj.lat}: ${degreesMinutes[0][0]}°${degreesMinutes[0][1]}'`;
   document.querySelector('.lng').textContent = `${translationObj.lng}: ${degreesMinutes[1][0]}°${degreesMinutes[1][1]}'`;
@@ -289,7 +292,7 @@ function getTime() {
 
 function getDate() {
   const lang = localStorage.getItem('lang');
-  
+
   const weekdayShort = new Date().toLocaleDateString(lang, { weekday: 'short' });
   const month = new Date().toLocaleDateString(lang, { month: 'long' });
   const dateNow = new Date().toLocaleDateString(lang, { day: 'numeric' });
@@ -306,12 +309,18 @@ function getDate() {
   // return dateNow;
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  getDate();
-  getTime();
-  time = setInterval(getTime, 1000);
-  init();
-});
+// window.addEventListener('DOMContentLoaded', () => {
+init().then(result => {
+  const imgElement = document.createElement('img');
+  imgElement.src = result.regular;
+  imgElement.addEventListener('load', function () {
+    renderWeatherInfo(result.placeName, result.dataWeatherCurrent, result.dataWeatherThreeDays, result.loc, result.regular);
+    getDate();
+    getTime();
+    time = setInterval(getTime, 1000);
+  })
+})
+// });
 
 function defineSeason() {
   const seasonIdx = Math.floor((new Date().getMonth() / 12 * 4)) % 4;
@@ -320,28 +329,32 @@ function defineSeason() {
 }
 
 function definepartOfDay(hrs) {
-  const partOfDay = (hrs > 8 && hrs < 20) ? 'day' : 'night';
+  let partOfDay;
+  if (hrs >= 6 && hrs < 12) {
+    partOfDay = 'morning';
+  } else if (hrs >= 12 && hrs < 18) {
+    partOfDay = 'day';
+  } else if (hrs >= 18 && hrs <= 24) {
+    partOfDay = 'evening';
+  } else if (hrs >= 0 && hrs < 6) {
+    partOfDay = 'night';
+  }
   return partOfDay;
 }
 
 async function init() {
   try {
-    const { loc, city } = await getUserLocation();
-    // initMap(loc);
-
     const hrs = new Date().getHours();
     const partOfDay = definepartOfDay(hrs);
-
-    // const { urls: { regular } } = await getImage(season, partOfDay);
-
-    const { results: [{ components: { country } }] } = await getCountryName(loc);
-    const dataWeatherCurrent = await getCurrentWeather(loc);
-    const dataWeatherThreeDays = await getThreeDaysWeather(loc);
-    const { threeDaysTemp, threeDaysWeekdays, threeDaysIcons } = filterWeatherThreeDays(dataWeatherThreeDays);
-
+    const { loc, city } = await getUserLocation();
+    let [{ urls: { regular } }, { results: [{ components: { country } }] }, dataWeatherCurrent, dataWeatherThreeDays]
+      = await Promise.all([getImage(season, partOfDay),
+      getCountryName(loc),
+      getCurrentWeather(loc),
+      getThreeDaysWeather(loc),
+      ])
     const placeName = `${city}, ${country}`;
-    // renderWeatherInfo(placeName, dataWeatherCurrent, threeDaysTemp, threeDaysWeekdays, threeDaysIcons, loc, regular);
-    renderWeatherInfo(placeName, dataWeatherCurrent, threeDaysTemp, threeDaysWeekdays, threeDaysIcons, loc);
+    return { placeName, regular, loc, dataWeatherCurrent, dataWeatherThreeDays }
   } catch (err) {
     console.log(err);
   }
@@ -349,7 +362,7 @@ async function init() {
 
 function defineLocalTime(timezone) {
   const lang = localStorage.getItem('lang');
-  
+
   let date = new Date();
   let localTime24 = date.toLocaleTimeString(lang, { timeZone: timezone, hour12: false });
   let regexp = new RegExp('^24');
@@ -402,10 +415,16 @@ async function displayNewWeatherInfo(keyWord) {
     const partOfDay = definepartOfDay(hrs);
 
     const { urls: { regular } } = await getImage(season, partOfDay);
-
     const dataWeatherThreeDays = await getThreeDaysWeather(geometry);
-    const { threeDaysTemp, threeDaysWeekdays, threeDaysIcons } = filterWeatherThreeDays(dataWeatherThreeDays);
-    renderWeatherInfo(placeName, dataWeatherCurrent, threeDaysTemp, threeDaysWeekdays, threeDaysIcons, geometry, regular);
+    // const { threeDaysTemp, threeDaysWeekdays, threeDaysIcons } = filterWeatherThreeDays(dataWeatherThreeDays);
+
+    const imgElement = document.createElement('img');
+    imgElement.src = regular;
+    imgElement.addEventListener('load', function () {
+      renderWeatherInfo(placeName, dataWeatherCurrent, dataWeatherThreeDays, geometry, regular);
+    })
+
+
   } catch (err) {
     console.log(err);
   }
@@ -431,9 +450,9 @@ document.querySelector('.btn--image').addEventListener('click', changeImage)
 // внешний вид (классы) +
 
 // уведомления об ошибках (плюс посмотреть PR)
-// promise all
+// promise all +/-
 // loader
-// перевод +.-
+// перевод +/-
 
 // если на бел, при поиске и зарузке надо подтягивать дни недели
 // переводить название города

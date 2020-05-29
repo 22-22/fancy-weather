@@ -32,7 +32,7 @@
             <button class="btn btn--fahr">°F</button>
         </div>
         <form class="search" action="" method="GET">
-            <input data-i18n="placeholder" type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city"><button data-i18n="search" class="btn search__btn">search</button>
+            <input type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city"><button data-i18n="search" class="btn search__btn">search</button>
             <img src="./src/assets/mic.svg" class="search__mic" alt="mic"></img>
         </form>
     </header>
@@ -40,35 +40,37 @@
         <div class="main__container">
             <div class="weather">
                 <p class="location"></p>
-                <span id="day"></span>
+                <span data-i18n="" id="weekdayShort"></span>
+                <span id="date"></span>
+                <span data-i18n="" id="month"></span>
                 <span id="time"></span>
                 <div class="weather-today">
                     <div class="weather-today__temp"></div>
                     <div class="weather-today__details">
                         <div id="weather-icon-today"></div>
-                        <div class="weather-today-descript"></div>
-                        <span data-i18n="feel">Feels like </span><div class="weather-today-feels"></div>
-                        <div data-i18n="wind" class="weather-today-wind"></div><span data-i18n="ms"> m/s</span>
+                        <div data-i18n="" class="weather-today-descript"></div>
+                        <div data-i18n="feel" class="weather-today-feels"></div>
+                        <div data-i18n="wind" class="weather-today-wind"></div><span class="meters-sec" data-i18n="ms"></span>
                         <div data-i18n="humidity" class="weather-today-humid"></div>
                     </div>
                 </div>
                 <div class="weather-forecast-container">
                     <div class="forecast">
-                        <p data-i18n="day" class="forecast__day"></p>
+                        <p data-i18n="" class="forecast__day"></p>
                         <div class="forecast__info">
                             <div class="forecast__temp"></div>
                             <div class="forecast__icon" id="forecast-icon-1"></div>
                         </div>
                     </div>
                     <div class="forecast">
-                        <p data-i18n="day" class="forecast__day"></p>
+                        <p data-i18n="" class="forecast__day"></p>
                         <div class="forecast__info">
                             <div class="forecast__temp"></div>
                             <div class="forecast__icon" id="forecast-icon-2"></div>
                         </div>
                     </div>
                     <div class="forecast">
-                        <p data-i18n="day" class="forecast__day"></p>
+                        <p data-i18n="" class="forecast__day"></p>
                         <div class="forecast__info">
                             <div class="forecast__temp"></div>
                             <div class="forecast__icon" id="forecast-icon-3"></div>

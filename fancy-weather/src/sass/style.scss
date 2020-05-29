@@ -1,5 +1,5 @@
 $bgcolor: navy;
-$textcolor: white;
+$textcolor: black;
 
 * {
     margin: 0;
@@ -21,6 +21,10 @@ body {
   justify-content: space-between;
   margin: 40px 90px 0;
 }
+
+// .weather-today-feels {
+//   display: inline-block;
+// }
 
 .header__btns {
   display: flex;
@@ -184,7 +188,7 @@ body {
         top:29px;
         right:-15px;
         display: block;
-        background: #fff;
+        background: whitesmoke;
         width: 120px;
         padding-top: 0px;
         z-index: 1;
@@ -263,7 +267,7 @@ body {
   color: $textcolor;
 }
 
-#day, #time {
+#date, #time, #weekdayShort, #month  {
   font-weight: 600;
   font-size: 24px;
   line-height: 29px;

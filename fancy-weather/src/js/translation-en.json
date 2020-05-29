@@ -4,12 +4,39 @@
     "feel": "Feels like:",
     "wind": "Wind:",
     "ms": "m/s",
-    "humidity": "Humidity: ",
-    "day": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    "month": [
-      "January", "February", "March", "April", "May", "June", "July", "August", "September", 
-      "October", "November", "December"
-    ],
+    "humidity": "Humidity:",
+    "day": {
+      "idx0": "Sunday",
+      "idx1": "Monday",
+      "idx2": "Tuesday",
+      "idx3": "Wednesday",
+      "idx4": "Thursday",
+      "idx5": "Friday",
+      "idx6": "Saturday"
+    },
+    "dayShort": {
+      "idx0": "Sun",
+      "idx1": "Mon",
+      "idx2": "Tue",
+      "idx3": "Wed",
+      "idx4": "Thu",
+      "idx5": "Fri",
+      "idx6": "Sat"
+    },
+    "month": {
+      "idx0": "January",
+      "idx1": "February",
+      "idx2": "March",
+      "idx3": "April",
+      "idx4": "May",
+      "idx5": "June",
+      "idx6": "July",
+      "idx7": "August",
+      "idx8": "September",
+      "idx9": "October",
+      "idx10": "November",
+      "idx11": "December"
+    },
     "lat": "Latitude",
     "lng": "Longitude",
     "weather": {

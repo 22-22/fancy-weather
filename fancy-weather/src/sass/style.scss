@@ -1,5 +1,5 @@
 $bgcolor: navy;
-$textcolor: black;
+$textcolor: whitesmoke;
 
 * {
     margin: 0;
@@ -12,7 +12,15 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
+}
+
+.loading {
+background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gif');
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .header {
@@ -21,10 +29,6 @@ body {
   justify-content: space-between;
   margin: 40px 90px 0;
 }
-
-// .weather-today-feels {
-//   display: inline-block;
-// }
 
 .header__btns {
   display: flex;
@@ -38,7 +42,7 @@ body {
 }
 .search__input {
   background: rgba(76, 82, 85, 0.4);
-  width: 274px;
+  width: 260px;
   height: 44px;
   caret-color: navy; 
   border-radius: 5px 0 0 5px;
@@ -67,7 +71,7 @@ body {
   text-transform: uppercase;
   color: $textcolor;
   outline: 0;
-  padding-top: 1px;
+  padding-top: 1px;  
 }
 
 .search__mic {
@@ -117,23 +121,19 @@ body {
 .btn--image {
   width: 44px;
   height: 44px;
-  background: rgba(174, 181, 185, 0.5);
   border: 0;
   outline: 0;
-  font-weight: bold;
-  font-size: 14px;
-  line-height: 17px;
-  text-transform: uppercase;
-  color: $textcolor;
   margin-right: 10px;
   border-radius: 5px;
+  background-image: url('../assets/refreshbg.png');
+  opacity: 0.6;
 }
 
 .btn {
   cursor: pointer;
   transition: all 0.3s linear;
   &:hover {
-    background: lightblue;
+    box-shadow: 0px 0px 9px 5px lightblue;
   }
 }
 
@@ -221,7 +221,7 @@ body {
 }
 
 .dropdown li ul li span:hover, .dropdown li ul li span.active {
-  color: #146c78;
+  color: #105a64;
 }
 .flag {
   display: inline-block;
@@ -261,7 +261,7 @@ body {
 }
 
 .location {
-  font-size: 44px;
+  font-size: 3rem;
   line-height: 54px;
   text-transform: uppercase;
   color: $textcolor;
@@ -283,7 +283,7 @@ body {
   flex-wrap: wrap;
   .forecast {
     width: 28%;
-    margin-right: 3%;
+    margin-right: 6%;
     font-weight: bold;
     font-size: 22px;
     line-height: 27px;
@@ -340,7 +340,6 @@ body {
 #map { 
   width: 400px;
   height: 400px;
-  // position: absolute;
   clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
   margin-bottom: 15px;
 }
@@ -354,9 +353,71 @@ body {
   color: $textcolor;
 }
 
+@media (max-width: 1200px)  {
+.main__container {
+  justify-content: center;
+}
+}
+
 @media (max-width: 767px)  {
   .main__container {
       flex-direction: column;
   }
+
+  .header {
+    margin: 40px 30px 0;
+  }
+
+  .search__input {
+    width: 200px;
+  }
+
+  .search__btn {
+    width: 60px;
+    font-size: 13px;
+    padding-top: 3px;
+  }
+
+  .search__mic {
+    right: 58px;
+  }
+
+  .weather-forecast-container {
+    padding-top: 15px;
+  }
+
+  .weather-today .weather-today__temp {
+    font-size: 150px;
+  }
+}
+
+@media (max-width: 595px)  {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main__container {
+    margin: 9% 12%;
+  }
+
+  .search {
+    margin-top: 20px;
+  }
+
+  .search__input {
+    width: 140px;
+  }
+
+  .weather-forecast-container {
+    flex-direction: column;
+  }
+
+  #map { 
+    width: 250px;
+    height: 250px;  
+  }
+
 }
   

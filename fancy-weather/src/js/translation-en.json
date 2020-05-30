@@ -37,8 +37,8 @@
       "idx10": "November",
       "idx11": "December"
     },
-    "lat": "Latitude",
-    "lng": "Longitude",
+    "lat": "Latitude:",
+    "lng": "Longitude:",
     "weather": {
       "200": "Thunderstorm with light rain",
       "201": "Thunderstorm with rain",

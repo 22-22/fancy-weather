@@ -6,7 +6,7 @@
     "style": "sass --watch src/sass/style.scss src/sass/style.css",
     "dev": "webpack --mode development",
     "prod": "webpack --mode production",
-    "lint": "node node_modules/eslint/bin/eslint.js ./src/js/script.js",
+    "lint": "node node_modules/eslint/bin/eslint.js ./src/js/",
     "test": "jest"
   },
   "jest": {

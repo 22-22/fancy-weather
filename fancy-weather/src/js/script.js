@@ -17,6 +17,11 @@ let time; let mapObj; let marker; let
 localStorage.setItem('lang', localStorage.getItem('lang') || 'en');
 localStorage.setItem('tempType', localStorage.getItem('tempType') || 'M');
 
+function isEnglish(value) {
+  const engNum = /[a-z]/i;
+  return engNum.test(value);
+}
+
 function adjustCoordinates(location) {
   let coordinates;
   if (typeof location === 'string') {
@@ -361,13 +366,16 @@ async function init() {
     const lang = localStorage.getItem('lang');
 
     const { loc, city } = await getUserLocation();
+  
     const { results: [{ components: { country } }] } = await getLocationName(loc);
 
-    const [{ urls: { regular } }, dataWeatherCurrent, dataWeatherThreeDays, cityTranslated] = await Promise.all([getImage(partOfDay),
+    const [{ urls: { regular } }, dataWeatherCurrent, dataWeatherThreeDays] = await Promise.all([getImage(partOfDay),
       getCurrentWeather(loc),
-      getThreeDaysWeather(loc),
-      fetchTranslation(city, lang),
+      getThreeDaysWeather(loc),      
     ]);
+
+    const cityTranslated = await checkIfTranslationNeeded(city);
+    
     return {
       cityTranslated, country, regular, loc, dataWeatherCurrent, dataWeatherThreeDays,
     };
@@ -413,12 +421,21 @@ function defineLocalDate(timezone) {
   // return localDate;
 }
 
+async function checkIfTranslationNeeded(word) {
+  const lang = localStorage.getItem('lang');
+  let wordChecked;
+    if (lang === 'en' && isEnglish(word)) {
+      wordChecked = word;
+    } else {
+      wordChecked = await fetchTranslation(word, lang);
+    }
+    return wordChecked;
+}
 async function displayNewWeatherInfo(city, country, geometry) {
   try {
     const lang = localStorage.getItem('lang');
-
-    const cityTranslated = await fetchTranslation(city, lang);
-
+    const cityTranslated = await checkIfTranslationNeeded(city);
+    
     showMapSearch(geometry);
     marker = addMarker(geometry);
 

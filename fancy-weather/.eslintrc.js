@@ -16,6 +16,9 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
+        'no-undef': 0,
+        'no-param-reassign': 0,
+        'no-unused-vars': 0
     }
 
 };

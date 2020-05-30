@@ -9,10 +9,10 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css' rel='stylesheet' />
 </head>
 
-<body>
-    <header class="header">
+<body class="loading">
+    <header class="header hidden">
         <div class="header__btns">
-            <button class="btn btn--image">Img</button>
+            <button class="btn btn--image"></button>
             <div class="dropdown">
                 <ul>
                     <li>En<i aria-hidden="true"></i>
@@ -30,6 +30,7 @@
             </div>
             <button class="btn btn--cels">°C</button>
             <button class="btn btn--fahr">°F</button>
+            <buttton class="btn voice-btn">V</buttton>
         </div>
         <form class="search" action="" method="GET">
             <input type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city"><button data-i18n="search" class="btn search__btn">.</button>
@@ -39,19 +40,19 @@
     <main class="main">
         <div class="main__container">
             <div class="weather">
-                <p class="location"></p>
+                <p data-voice class="location"></p>
                 <span data-i18n="" id="weekdayShort"></span>
                 <span id="date"></span>
                 <span data-i18n="" id="month"></span>
                 <span id="time"></span>
                 <div class="weather-today">
-                    <div class="weather-today__temp"></div>
+                    <div data-voice class="weather-today__temp"></div>
                     <div class="weather-today__details">
                         <div id="weather-icon-today"></div>
-                        <div data-i18n="" class="weather-today-descript"></div>
-                        <div data-i18n="feel" class="weather-today-feels"></div>
-                        <div data-i18n="wind" class="weather-today-wind"></div><span class="meters-sec" data-i18n="ms"></span>
-                        <div data-i18n="humidity" class="weather-today-humid"></div>
+                        <div data-voice data-i18n="" class="weather-today-descript"></div>
+                        <div data-voice data-i18n="feel" class="weather-today-feels"></div>
+                        <div data-voice data-i18n="wind" class="weather-today-wind"></div><span class="meters-sec" data-i18n="ms"></span>
+                        <div data-voice data-i18n="humidity" class="weather-today-humid"></div>
                     </div>
                 </div>
                 <div class="weather-forecast-container">

@@ -1,24 +1,46 @@
+const synth = window.speechSynthesis;
 const utterance = new SpeechSynthesisUtterance();
-// const voices = [];
-const startBtn = document.querySelector('.voice-btn');
+utterance.volume = 0.7;
 
-const phrasesToSay = [];
+const startBtn = document.querySelector('.btn--voice');
+let voices = [];
 
 function populateVoices() {
-  const voices = this.getVoices();
-  console.log(voices);
+  voices = synth.getVoices();
+  return voices;
 }
 
-startBtn.addEventListener('click', () => {
+function setVoice() {
+  utterance.voice = voices.find((voice) => {
+    if (localStorage.getItem('lang') === 'en') {
+      return voice.lang.includes('en-GB');
+    }
+    return voice.lang.includes('ru');
+  });
+}
+
+function toggleSpeech() {
+  if (synth.speaking) {
+    synth.cancel();
+  } else {
+    synth.speak(utterance);
+  }
+}
+
+function getTextToSay() {
+  const phrasesToSay = [];
   const elementsToSay = document.querySelectorAll('[data-voice]');
-
   elementsToSay.forEach((el) => phrasesToSay.push(el.textContent));
-
   utterance.text = phrasesToSay;
+}
 
-  // console.log(utterance)
-  speechSynthesis.speak(utterance);
-});
-speechSynthesis.addEventListener('voiceschanged', populateVoices);
+function handleSpeechSynth() {
+  setVoice();
+  getTextToSay();
+  toggleSpeech();
+}
+synth.addEventListener('voiceschanged', populateVoices);
 
-export default utterance;
+startBtn.addEventListener('click', handleSpeechSynth);
+
+export { utterance, handleSpeechSynth };

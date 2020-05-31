@@ -1,5 +1,5 @@
 $bgcolor: navy;
-$textcolor: whitesmoke;
+$textcolor: rgb(219, 216, 216);
 
 * {
     margin: 0;
@@ -15,12 +15,24 @@ body {
 }
 
 .loading {
-background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gif');
+  background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gif');
 }
 
 .hidden {
   opacity: 0;
   visibility: hidden;
+}
+
+.none {
+  display: none;
+}
+
+.scaled {
+  transform: scale(1.2) !important;
+}
+
+.active {
+  background: rgba(174, 181, 185, 0.5) !important;
 }
 
 .header {
@@ -33,6 +45,7 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
 .header__btns {
   display: flex;
   flex-wrap: wrap;
+  position: relative;
 }
 
 
@@ -80,7 +93,6 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
   position: absolute;
   right: 114px;
   top: 7px;
-  // opacity: 0.9;
   cursor: pointer;
   transform: scale(0.8);
   transition: all 0.3s linear;
@@ -90,10 +102,23 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
   }
 }
 
+.search__loader--active {
+  width: 100px;
+  height: 44px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  transition: all 0.3s linear;
+  opacity: 0.3;
+  background-image: url('https://media.giphy.com/media/iJOZwC1R7WVxAxs4Gs/giphy.gif');
+  background-size: cover;
+  background-position: center;
+}
+
 .btn--cels {
   width: 44px;
   height: 44px;
-  background: rgba(174, 181, 185, 0.5);
+  background: rgba(76, 82, 85, 0.4);
   border: 0;
   font-weight: bold;
   font-size: 16px;
@@ -116,6 +141,7 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
   color: $textcolor;
   border-radius: 0 5px 5px 0;
   outline: 0;
+  margin-right: 10px;
 }
 
 .btn--image {
@@ -129,124 +155,106 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
   opacity: 0.6;
 }
 
-.btn {
+.play {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 7px;
+  top: 7px;
   cursor: pointer;
+  transform: scale(0.8);
   transition: all 0.3s linear;
-  &:hover {
-    box-shadow: 0px 0px 9px 5px lightblue;
-  }
+  opacity: 0.7;
 }
 
-/*******************DROPDOWN***************************/
-
-.dropdown {
+.btn--voice {
   width: 44px;
   height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(174, 181, 185, 0.5);
   border: 0;
+  outline: 0;
+  margin-right: 10px;
+  border-radius: 5px;
+  background:  rgba(38, 40, 41, 0.5);
+  position: relative;
+  margin-right: 10px;
+}
+
+.btn--info {
+  width: 44px;
+  height: 44px;
+  background: rgba(174, 181, 185, 0.5); 
+  border: 0;
+  font-weight: bold;
+  font-size: 25px;
+  line-height: 17px;
+  text-transform: uppercase;
+  color: $textcolor;
+  border-radius: 5px;
+  outline: 0;
+}
+
+.ru, .en, .be {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  outline: 0;
   font-weight: bold;
   font-size: 16px;
   line-height: 17px;
   text-transform: uppercase;
   color: $textcolor;
+  background:  rgba(76, 82, 85, 0.4);
+}
+
+.ru {
+  border-radius: 5px 0 0 5px;
+}
+
+.be {
   margin-right: 10px;
+  border-radius: 0 5px 5px 0;
+}
+
+.btn {
+  cursor: pointer;
+  transition: all 0.3s linear;
+  &:hover {
+    box-shadow: 0px 0px 6px 3px lightblue;
+  }
+}
+
+/*******************MODAL**********************/
+
+.modal {
+  position: absolute;
+  width: 100%;
+  background-color: whitesmoke;
   border-radius: 5px;
-  ul {
-    margin:0;
-    padding:0;
-    list-style: none;
-    position: relative;
-    display: inline-block;
-  }
-  li {
-    cursor: pointer;
-    ul {
-      display: none;
-      li {
-        position: relative;
-        text-align: left;
-        background: transparent;
-        padding: 15px 15px;
-        padding-bottom:0;
-        z-index: 2;
-        font-size: 15px;
-        color: #3c3c3c;
-        &:last-of-type {
-          padding-bottom: 15px;
-        }
-        span {
-          padding-left: 5px;
-        }
-      }
-    }
-    &:hover {
-      ul {
-        position: absolute;
-        top:29px;
-        right:-15px;
-        display: block;
-        background: whitesmoke;
-        width: 120px;
-        padding-top: 0px;
-        z-index: 1;
-        border-radius:5px;
-        box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
-      } 
-      .triangle {
-        position: absolute;
-        top: 15px;
-        right: -10px;
-        z-index:10;
-        height: 14px;
-        overflow:hidden;
-        width: 30px;
-        background: transparent;
-        &:after {
-          content: '';
-          display: block;
-          z-index: 20;
-          width: 15px;
-          transform: rotate(45deg) translateY(0px) translatex(10px);
-          height: 15px;
-          background: #fff;
-          border-radius:2px 0px 0px 0px;
-          box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
-        }
-      }
-    }
-  }
+  transform: translate(0%, 30%);
+  z-index: 2;
 }
 
-.dropdown li ul li span:hover, .dropdown li ul li span.active {
-  color: #105a64;
-}
-.flag {
-  display: inline-block;
-  box-shadow: 0px 0px 3px rgba(0,0,0,0.4);
-  width: 15px;
-  height: 15px;
-  background: #aaa;
-  border-radius: 50%;
-  position: relative;
-  top: 2px;
-  overflow: hidden;
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+.modal__content {
+  text-align: center;
+  color: rgb(15, 13, 13);
+  padding: 10px;
 }
 
-.flag-ru {
-  background-image: url('../assets/ru.png'); 
+.modal__close-button {
+  width: 17%;
+  margin: 10px 42%;
+  padding: 5px;
+  border-radius: 5px;
+  border: 0;
+  color: whitesmoke;
+  background: rgba(76, 82, 85, 0.4);
+  text-transform: uppercase;
+  justify-content: center;
+  outline: 0;
 }
-.flag-en {
-  background-image: url('../assets/en.png');
-}
-.flag-be {
-  background-image: url('../assets/be.png');
-  background-position: left;
+
+.modal__close-button:hover {
+  cursor: pointer;
 }
 
 /********************MAIN************************/
@@ -359,6 +367,23 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
 }
 }
 
+@media (max-width: 1020px)  {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal {
+    margin-top: 45px;
+  }
+
+  .header__btns {
+    margin-bottom: 20px;
+  }
+
+}
+
 @media (max-width: 767px)  {
   .main__container {
       flex-direction: column;
@@ -375,7 +400,11 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
   .search__btn {
     width: 60px;
     font-size: 13px;
-    padding-top: 3px;
+    padding-top: 1px;
+  }
+
+  .search__loader--active {
+    width: 60px;
   }
 
   .search__mic {
@@ -392,18 +421,9 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
 }
 
 @media (max-width: 595px)  {
-  .header {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
+  
   .main__container {
     margin: 9% 12%;
-  }
-
-  .search {
-    margin-top: 20px;
   }
 
   .search__input {
@@ -420,4 +440,24 @@ background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gi
   }
 
 }
-  
+
+@media (max-width: 468px) {
+.btn--info {
+  margin-top: 20px;
+}
+}
+
+@media (max-width: 424px) {
+    .btn--voice {
+      margin-top: 20px;
+    }
+}
+
+@media (max-width: 370px) {
+      .btn--image {
+        margin-top: 20px;
+      }
+}
+
+
+   

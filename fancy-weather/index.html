@@ -12,28 +12,34 @@
 <body class="loading">
     <header class="header hidden">
         <div class="header__btns">
-            <button class="btn btn--image"></button>
-            <div class="dropdown">
-                <ul>
-                    <li>En<i aria-hidden="true"></i>
-                        <div class="triangle"></div>
-                        <ul>
-                            <li id="en"><i class="flag flag-en">
-                                </i> <span class="active">En</span></li>
-                            <li id="ru"><i class="flag flag-ru">
-                                </i> <span>Ru</span></li>
-                            <li id="be"><i class="flag flag-be">
-                                </i> <span>Be</span></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+            <button class="ru btn--lang btn">Ru</button>
+            <button class="en btn--lang btn">En</button>
+            <button class="be btn--lang btn">Be</button>
             <button class="btn btn--cels">°C</button>
             <button class="btn btn--fahr">°F</button>
-            <buttton class="btn voice-btn">V</buttton>
+            <button class="btn btn--image"></button>
+            <buttton class="btn btn--voice">
+                <img src="./src/assets/play.png" class="play" alt="play"></img>
+            </buttton>
+            <button class="btn btn--info">?</button>
+            <div class="modal none">
+                <div class="modal__content">
+                    <strong>Список голосовых команд:</strong><br>
+                    прослушать звуковое уведомление о погоде: <strong>«Погода»</strong><br>
+                    увеличить громкость: <strong>«Громче»</strong><br>
+                    уменьшить громкость: <strong>«Тише»</strong><br>
+                    <br>
+                    <strong>Дополнительный функционал:</strong><br>
+                    Можно узнать погоду при клике по карте<br>
+                </div>
+                <button class="modal__close-button">ок</button>
+            </div>
         </div>
         <form class="search" action="" method="GET">
-            <input type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city"><button data-i18n="search" class="btn search__btn">.</button>
+            <input type="text" class="search__input" autofocus autocomplete="off" placeholder="Search city"><button
+                data-i18n="search" class="btn search__btn">.
+            </button>
+            <div id="search__loader"></div>
             <img src="./src/assets/mic.svg" class="search__mic" alt="mic"></img>
         </form>
     </header>
@@ -51,7 +57,8 @@
                         <div id="weather-icon-today"></div>
                         <div data-voice data-i18n="" class="weather-today-descript"></div>
                         <div data-voice data-i18n="feel" class="weather-today-feels"></div>
-                        <div data-voice data-i18n="wind" class="weather-today-wind"></div><span class="meters-sec" data-i18n="ms"></span>
+                        <div data-voice data-i18n="wind" class="weather-today-wind"></div><span data-voice class="meters-sec"
+                            data-i18n="ms"></span>
                         <div data-voice data-i18n="humidity" class="weather-today-humid"></div>
                     </div>
                 </div>

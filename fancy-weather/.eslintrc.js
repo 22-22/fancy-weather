@@ -18,7 +18,8 @@ module.exports = {
     "rules": {
         'no-undef': 0,
         'no-param-reassign': 0,
-        'no-unused-vars': 0
+        'no-unused-vars': 0,
+        'no-empty': 0
     }
 
 };

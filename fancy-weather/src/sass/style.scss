@@ -18,6 +18,7 @@ body {
   background-image: url('https://media.giphy.com/media/4EFt4UAegpqTy3nVce/giphy.gif');
 }
 
+
 .hidden {
   opacity: 0;
   visibility: hidden;
@@ -70,6 +71,13 @@ body {
   font-size: 14px;
   line-height: 17px;
   padding-left: 10px;
+}
+
+.err {
+  font-size: 12px;
+  color: red;
+  text-align: center;
+  margin-top: 5px;
 }
 
 .search__btn {
@@ -247,7 +255,7 @@ body {
   border-radius: 5px;
   border: 0;
   color: whitesmoke;
-  background: rgba(76, 82, 85, 0.4);
+  background: rgba(44, 47, 49, 0.4);
   text-transform: uppercase;
   justify-content: center;
   outline: 0;
@@ -349,7 +357,6 @@ body {
   width: 400px;
   height: 400px;
   clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
-  margin-bottom: 15px;
 }
 
 .lat, .lng {
@@ -359,6 +366,10 @@ body {
   text-align: left;
   text-transform: capitalize;
   color: $textcolor;
+}
+
+.lng {
+  margin-bottom: 10px;
 }
 
 @media (max-width: 1200px)  {
@@ -392,25 +403,6 @@ body {
   .header {
     margin: 40px 30px 0;
   }
-
-  .search__input {
-    width: 200px;
-  }
-
-  .search__btn {
-    width: 60px;
-    font-size: 13px;
-    padding-top: 1px;
-  }
-
-  .search__loader--active {
-    width: 60px;
-  }
-
-  .search__mic {
-    right: 58px;
-  }
-
   .weather-forecast-container {
     padding-top: 15px;
   }
@@ -426,10 +418,6 @@ body {
     margin: 9% 12%;
   }
 
-  .search__input {
-    width: 140px;
-  }
-
   .weather-forecast-container {
     flex-direction: column;
   }
@@ -441,19 +429,37 @@ body {
 
 }
 
-@media (max-width: 468px) {
+@media (max-width: 451px) {
 .btn--info {
   margin-top: 20px;
 }
 }
 
-@media (max-width: 424px) {
+@media (max-width: 407px) {
     .btn--voice {
       margin-top: 20px;
     }
+
+    .search__input {
+      width: 140px;
+    }
+    
+    .search__btn {
+        width: 60px;
+        font-size: 13px;
+        padding-top: 1px;
+      }
+    
+      .search__loader--active {
+        width: 60px;
+      }
+    
+      .search__mic {
+        right: 58px;
+      }
 }
 
-@media (max-width: 370px) {
+@media (max-width: 353px) {
       .btn--image {
         margin-top: 20px;
       }

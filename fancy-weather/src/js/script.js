@@ -6,6 +6,7 @@ import {
   defineTimeInSearchPlace, defineDateInSearchPlace,
 }
   from './help-define-time';
+import { convertToCels, convertToFahr, findDigitInString } from './help-define-temp';
 import iconsMap from './iconsMap';
 import translationBe from './translation-be.json';
 import translationRu from './translation-ru.json';
@@ -25,6 +26,10 @@ localStorage.setItem('tempType', localStorage.getItem('tempType') || 'M');
 function isEnglish(value) {
   const engNum = /[a-z]/i;
   return engNum.test(value);
+}
+
+function handleError(err) {
+  document.querySelector('.err').innerHTML = err;
 }
 
 function showLoading() {
@@ -78,88 +83,40 @@ function adjustCoordinates(location) {
   return coordinates;
 }
 
-function convertToCels(deg) {
-  return Math.round((parseInt(deg, 10) - 32) / 1.8);
+function splitCoordinatesForRendering(coordinates) {
+  const degreesMinutes = coordinates.map((coord) => {
+    coord = Math.round((+coord + Number.EPSILON) * 100) / 100;
+    return coord.toString().split('.');
+  });
+  return degreesMinutes;
 }
 
-function convertToFahr(deg) {
-  return Math.round(parseInt(deg, 10) * 1.8 + 32);
+async function fetchTranslation(query, lang) {
+  const urlTranslation = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${translationKey}&text=${query}&lang=${lang}`;
+  return fetch(urlTranslation)
+    .then((response) => response.json())
+    .then((translation) => {
+      if (translation.message) {
+        throw new Error(translation.message);
+      } else {
+        return translation.text;
+      }
+    })
+    .catch((err) => handleError(err));
 }
-
-function findDigitInString(str) {
-  const regexp = /\d+/g;
-  const match = str.match(regexp);
-  return match;
-}
-
-document.querySelector('.btn--info').addEventListener('click', () => {
-  document.querySelector('.modal').classList.remove('none');
-});
-
-document.querySelector('.modal__close-button').addEventListener('click', () => {
-  document.querySelector('.modal').classList.add('none');
-});
-
-document.querySelector('.btn--fahr').addEventListener('click', () => {
-  const lang = localStorage.getItem('lang');
-
-  let translationObj;
-  if (lang === 'be') {
-    translationObj = translationBe;
-  } else if (lang === 'ru') {
-    translationObj = translationRu;
-  } else {
-    translationObj = translationEn;
-  }
-
-  if (document.querySelector('.btn--cels').classList.contains('active')) {
-    document.querySelector('.btn--cels').classList.remove('active');
-    document.querySelector('.btn--fahr').classList.add('active');
-  }
-
-  if (localStorage.getItem('tempType') === 'M') {
-    tempCurr.textContent = `${convertToFahr(tempCurr.textContent)}°`;
-    const digit = findDigitInString(tempFeelsLike.textContent);
-    tempFeelsLike.textContent = `${translationObj.feel} ${convertToFahr(digit)}°`;
-    document.querySelectorAll('.forecast__temp').forEach((day, idx) => {
-      day.textContent = `${convertToFahr(day.textContent)}°`;
-    });
-    localStorage.setItem('tempType', 'I');
-  }
-});
-
-document.querySelector('.btn--cels').addEventListener('click', () => {
-  const lang = localStorage.getItem('lang');
-
-  let translationObj;
-  if (lang === 'be') {
-    translationObj = translationBe;
-  } else if (lang === 'ru') {
-    translationObj = translationRu;
-  } else {
-    translationObj = translationEn;
-  }
-
-  if (document.querySelector('.btn--fahr').classList.contains('active')) {
-    document.querySelector('.btn--fahr').classList.remove('active');
-    document.querySelector('.btn--cels').classList.add('active');
-  }
-
-  if (localStorage.getItem('tempType') === 'I') {
-    tempCurr.textContent = `${convertToCels(tempCurr.textContent)}°`;
-    const digit = findDigitInString(tempFeelsLike.textContent);
-    tempFeelsLike.textContent = `${translationObj.feel} ${convertToCels(digit)}°`;
-    document.querySelectorAll('.forecast__temp').forEach((day, idx) => {
-      day.textContent = `${convertToCels(day.textContent)}°`;
-    });
-    localStorage.setItem('tempType', 'M');
-  }
-});
 
 async function getUserLocation() {
   const url = `https://ipinfo.io/json?token=${locationKey}`;
   return fetch(url)
-    .then((response) => response.json());
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.error) {
+        throw new Error(result.error.title);
+      } else {
+        return result;
+      }
+    })
+    .catch((err) => handleError(err));
 }
 
 async function getSearchLocation(query) {
@@ -167,12 +124,21 @@ async function getSearchLocation(query) {
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${query}&language=${lang}&key=${geoCodingKey}`;
   return fetch(url)
     .then((response) => response.json())
-    .then((data) => {
-      const { geometry, components } = data.results[0];
-      const city = `${components.city || components.town || components.village || components.county || components.state || ''}`;
-      const { country } = components;
-      return { city, country, geometry };
-    });
+    .then((result) => {
+      if (result.status.code !== 200) {
+        hideLoading();
+        throw new Error(result.status.message);
+      } else if (result.results.length === 0) {
+        hideLoading();
+        throw new Error('No results');
+      } else {
+        const { geometry, components } = result.results[0];
+        const city = `${components.city || components.town || components.village || components.county || components.state || ''}`;
+        const { country } = components;
+        return { city, country, geometry };
+      }
+    })
+    .catch((err) => handleError(err));
 }
 
 function addMarker(location) {
@@ -183,32 +149,12 @@ function addMarker(location) {
   return marker;
 }
 
-// initialize the map
-function initMap(location) {
-  mapboxgl.accessToken = mapKey;
-  const coordinates = adjustCoordinates(location);
-  mapObj = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [coordinates[1], coordinates[0]],
-    zoom: 9,
-  });
-  return mapObj;
-}
-
 function showMapSearch(location) {
   const coordinates = adjustCoordinates(location);
   mapObj.flyTo({
     center: [coordinates[1], coordinates[0]],
     essential: true,
   });
-}
-
-async function fetchTranslation(query, lang) {
-  const urlTranslation = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${translationKey}&text=${query}&lang=${lang}`;
-  return fetch(urlTranslation)
-    .then((response) => response.json())
-    .then((translation) => translation.text);
 }
 
 async function checkIfTranslationNeeded(word) {
@@ -227,7 +173,15 @@ async function getLocationName(location) {
   const lang = localStorage.getItem('lang');
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates[0]}+${coordinates[1]}&language=${lang}&key=${geoCodingKey}`;
   return fetch(url)
-    .then((response) => response.json());
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.status.code !== 200) {
+        throw new Error(result.status.message);
+      } else {
+        return result;
+      }
+    })
+    .catch((err) => handleError(err));
 }
 
 async function getCurrentWeather(location) {
@@ -236,7 +190,15 @@ async function getCurrentWeather(location) {
   const lang = localStorage.getItem('lang');
   const url = `https://api.weatherbit.io/v2.0/current?lat=${coordinates[0]}&lon=${coordinates[1]}&lang=${lang}&units=${unit}&key=${weatherKey}`;
   return fetch(url)
-    .then((response) => response.json());
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        throw new Error(data.error);
+      } else {
+        return data;
+      }
+    })
+    .catch((err) => handleError(err));
 }
 
 async function getThreeDaysWeather(location) {
@@ -245,10 +207,18 @@ async function getThreeDaysWeather(location) {
   const lang = localStorage.getItem('lang');
   const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${coordinates[0]}&lon=${coordinates[1]}&lang=${lang}&units=${unit}&key=${weatherKey}`;
   return fetch(url)
-    .then((response) => response.json());
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        throw new Error(data.error);
+      } else {
+        return data;
+      }
+    })
+    .catch((err) => handleError(err));
 }
 
-function filterWeatherThreeDays(data) {
+function filterWeathThreeDays(data) {
   const lang = localStorage.getItem('lang');
   const threeDaysTemp = [];
   const threeWeekdays = {};
@@ -263,14 +233,6 @@ function filterWeatherThreeDays(data) {
     }
   });
   return { threeDaysTemp, threeWeekdays, threeDaysIcons };
-}
-
-function splitCoordinates(coordinates) {
-  const degreesMinutes = coordinates.map((coord) => {
-    coord = Math.round((+coord + Number.EPSILON) * 100) / 100;
-    return coord.toString().split('.');
-  });
-  return degreesMinutes;
 }
 
 function translateWithDictionaryObj(translationObj) {
@@ -301,6 +263,194 @@ async function translateWithAPI() {
   document.querySelector('.location').textContent = placeName;
 }
 
+function renderWeatherInfo(cityChecked, country, dataWeatherCur, weatherThreeDays, loc, image) {
+  try {
+    const placeName = `${cityChecked}, ${country}`;
+    const { threeDaysTemp, threeWeekdays, threeDaysIcons } = filterWeathThreeDays(weatherThreeDays);
+    const lang = localStorage.getItem('lang');
+    let translationObj;
+    if (lang === 'be') {
+      translationObj = translationBe;
+    } else if (lang === 'ru') {
+      translationObj = translationRu;
+    } else {
+      translationObj = translationEn;
+    }
+    document.body.style.backgroundImage = `linear-gradient(rgba(8, 15, 26, 0.6) 0%, rgba(17, 17, 46, 0.5) 100%), url(${image})`;
+    const coordinates = adjustCoordinates(loc);
+    const degreesMinutes = splitCoordinatesForRendering(coordinates);
+    document.querySelector('.search__input').placeholder = translationObj.placeholder;
+    document.querySelector('.search__btn').textContent = translationObj.search;
+    document.querySelector('.lat').textContent = `${translationObj.lat} ${degreesMinutes[0][0]}°${degreesMinutes[0][1] || '00'}'`;
+    document.querySelector('.lng').textContent = `${translationObj.lng} ${degreesMinutes[1][0]}°${degreesMinutes[1][1] || '00'}'`;
+    document.querySelector('.location').textContent = placeName;
+    tempCurr.textContent = `${Math.round(dataWeatherCur.data[0].temp)}°`;
+    document.querySelector('.weather-today-descript').textContent = dataWeatherCur.data[0].weather.description;
+    document.querySelector('.weather-today-descript').setAttribute('data-i18n', `weather.${dataWeatherCur.data[0].weather.code}`);
+    tempFeelsLike.textContent = `${translationObj.feel} ${Math.round(dataWeatherCur.data[0].app_temp)}°`;
+    document.querySelector('.weather-today-wind').textContent = `${translationObj.wind} ${Math.round(dataWeatherCur.data[0].wind_spd)} `;
+    document.querySelector('.weather-today-humid').textContent = `${translationObj.humidity} ${dataWeatherCur.data[0].rh}%`;
+    document.querySelector('.meters-sec').textContent = translationObj.ms;
+    document.querySelectorAll('.forecast__day').forEach((day, idx) => {
+      const key = Object.keys(threeWeekdays)[idx];
+      day.textContent = translationObj.day[key];
+      day.setAttribute('data-i18n', `day.${key}`);
+    });
+    document.querySelectorAll('.forecast__temp').forEach((temp, idx) => {
+      temp.textContent = `${Math.round(threeDaysTemp[idx])}°`;
+    });
+    document.querySelector('#weather-icon-today').style.backgroundImage = `url('${iconsMap[dataWeatherCur.data[0].weather.icon]}')`;
+    document.querySelector('#forecast-icon-1').style.backgroundImage = `url('${iconsMap[threeDaysIcons[0]]}')`;
+    document.querySelector('#forecast-icon-2').style.backgroundImage = `url('${iconsMap[threeDaysIcons[1]]}')`;
+    document.querySelector('#forecast-icon-3').style.backgroundImage = `url('${iconsMap[threeDaysIcons[2]]}')`;
+    addActiveClassToLang();
+    addActiveClassToTemp();
+  } catch (err) {
+  }
+}
+
+async function getImage(partOfDay) {
+  console.log(`Search params: ${season}, ${partOfDay}`);
+  const url = 'https://api.unsplash.com/photos/random?orientation=landscape'
+    + `&per_page=1&query={${season}, ${partOfDay}}}&client_id=${imageKey}`;
+  return fetch(url)
+    .then((response) => {
+      if (response.status === 403) {
+        throw new Error('Rate Limit Exceeded');
+      } else {
+        return response.json();
+      }
+    })
+    .then((data) => {
+      if (data.errors) {
+        throw new Error(data.errors);
+      } else {
+        return data.urls;
+      }
+    })
+    .catch((err) => handleError(err));
+}
+
+async function init() {
+  const hrs = new Date().getHours();
+  const partOfDay = definepartOfDay(hrs);
+  const lang = localStorage.getItem('lang');
+  const { loc, city } = await getUserLocation();
+  const { results: [{ components: { country } }] } = await getLocationName(loc);
+  const { regular } = await getImage(partOfDay);
+  const dataWeatherCur = await getCurrentWeather(loc);
+  const dataWeatherThreeDays = await getThreeDaysWeather(loc);
+  const cityChecked = await checkIfTranslationNeeded(city);
+  return {
+    cityChecked, country, regular, loc, dataWeatherCur, dataWeatherThreeDays,
+  };
+}
+
+async function displayNewWeatherInfo(city, country, coord) {
+  try {
+    const lang = localStorage.getItem('lang');
+    const cityChecked = await checkIfTranslationNeeded(city);
+    showMapSearch(coord);
+    marker = addMarker(coord);
+    const dataWeatherCur = await getCurrentWeather(coord);
+    const { timezone } = dataWeatherCur.data[0];
+    const timeLocal = defineTimeInSearchPlace(timezone);
+    const hrs = timeLocal.slice(0, 2);
+    const partOfDay = definepartOfDay(hrs);
+    const { regular } = await getImage(partOfDay);
+    const dataWeatherThreeDays = await getThreeDaysWeather(coord);
+    const imgElement = document.createElement('img');
+    imgElement.src = regular;
+    imgElement.addEventListener('load', () => {
+      renderWeatherInfo(cityChecked, country, dataWeatherCur, dataWeatherThreeDays, coord, regular);
+      defineDateInSearchPlace(timezone);
+      clearInterval(time);
+      time = setInterval(defineTimeInSearchPlace, 1000, timezone);
+      document.querySelector('.err').innerHTML = '';
+      hideLoading();
+    });
+  } catch (err) { }
+}
+
+async function changeImage() {
+  const hrs = document.querySelector('#time').textContent.slice(0, 2);
+  const partOfDay = definepartOfDay(hrs);
+  const { regular } = await getImage(partOfDay);
+  document.body.style.backgroundImage = `linear-gradient(rgba(8, 15, 26, 0.6) 0%, rgba(17, 17, 46, 0.5) 100%), url(${regular})`;
+}
+
+async function searchWeather(e) {
+  try {
+    e.preventDefault();
+    const keyWord = document.querySelector('.search__input').value;
+    if (!keyWord) {
+      return;
+    }
+    marker.remove();
+    showLoading();
+    const result = await getSearchLocation(keyWord);
+    const { city, country, geometry } = result;
+    displayNewWeatherInfo(city, country, geometry);
+  } catch (err) { }
+}
+
+// initialize the map
+function initMap(location) {
+  mapboxgl.accessToken = mapKey;
+  const coordinates = adjustCoordinates(location);
+  mapObj = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [coordinates[1], coordinates[0]],
+    zoom: 9,
+  });
+  mapObj.on('error', (evt) => {
+    const err = evt.error.message;
+    handleError(err);
+  });
+  mapObj.on('load', () => {
+    marker = addMarker(location);
+  });
+  mapObj.on('click', async (evt) => {
+    const arrCoordinates = Object.values(evt.lngLat).reverse();
+    const { results: [{ components: { country, city } }] } = await getLocationName(arrCoordinates);
+    marker.remove();
+    showLoading();
+    displayNewWeatherInfo(city, country, arrCoordinates);
+  });
+  return mapObj;
+}
+
+// event listeners
+document.querySelector('.btn--info').addEventListener('click', () => {
+  document.querySelector('.modal').classList.remove('none');
+});
+
+document.querySelector('.modal__close-button').addEventListener('click', () => {
+  document.querySelector('.modal').classList.add('none');
+});
+
+document.querySelector('.btn--image').addEventListener('click', changeImage);
+
+document.querySelector('.search').addEventListener('submit', searchWeather);
+
+recognition.addEventListener('result', async (e) => {
+  const recognizedWord = e.results[0][0].transcript;
+  document.querySelector('.search__input').value = recognizedWord;
+  if (recognizedWord === 'погода') {
+    handleSpeechSynth();
+  } else if (recognizedWord === 'громче') {
+    utterance.volume += 0.5;
+  } else if (recognizedWord === 'тише') {
+    utterance.volume -= 0.5;
+  } else {
+    marker.remove();
+    showLoading();
+    const result = await getSearchLocation(recognizedWord);
+    displayNewWeatherInfo(result.city, result.country, result.geometry);
+  }
+});
+
 document.querySelector('.ru').addEventListener('click', () => {
   localStorage.setItem('lang', 'ru');
   translateWithDictionaryObj(translationRu);
@@ -325,9 +475,7 @@ document.querySelector('.be').addEventListener('click', () => {
   toggleActiveClass(selector);
 });
 
-function renderWeatherInfo(cityChecked, country, dataWeatherCur, weatherThreeDays, loc, image) {
-  const placeName = `${cityChecked}, ${country}`;
-  const { threeDaysTemp, threeWeekdays, threeDaysIcons } = filterWeatherThreeDays(weatherThreeDays);
+document.querySelector('.btn--fahr').addEventListener('click', () => {
   const lang = localStorage.getItem('lang');
   let translationObj;
   if (lang === 'be') {
@@ -337,149 +485,52 @@ function renderWeatherInfo(cityChecked, country, dataWeatherCur, weatherThreeDay
   } else {
     translationObj = translationEn;
   }
-  document.body.style.backgroundImage = `linear-gradient(rgba(8, 15, 26, 0.6) 0%, rgba(17, 17, 46, 0.5) 100%), url(${image})`;
-  const coordinates = adjustCoordinates(loc);
-  const degreesMinutes = splitCoordinates(coordinates);
-  document.querySelector('.search__input').placeholder = translationObj.placeholder;
-  document.querySelector('.search__btn').textContent = translationObj.search;
-  document.querySelector('.lat').textContent = `${translationObj.lat} ${degreesMinutes[0][0]}°${degreesMinutes[0][1] || '00'}'`;
-  document.querySelector('.lng').textContent = `${translationObj.lng} ${degreesMinutes[1][0]}°${degreesMinutes[1][1] || '00'}'`;
-  document.querySelector('.location').textContent = placeName;
-  tempCurr.textContent = `${Math.round(dataWeatherCur.data[0].temp)}°`;
-  document.querySelector('.weather-today-descript').textContent = dataWeatherCur.data[0].weather.description;
-  document.querySelector('.weather-today-descript').setAttribute('data-i18n', `weather.${dataWeatherCur.data[0].weather.code}`);
-  tempFeelsLike.textContent = `${translationObj.feel} ${Math.round(dataWeatherCur.data[0].app_temp)}°`;
-  document.querySelector('.weather-today-wind').textContent = `${translationObj.wind} ${Math.round(dataWeatherCur.data[0].wind_spd)} `;
-  document.querySelector('.weather-today-humid').textContent = `${translationObj.humidity} ${dataWeatherCur.data[0].rh}%`;
-  document.querySelector('.meters-sec').textContent = translationObj.ms;
-  document.querySelectorAll('.forecast__day').forEach((day, idx) => {
-    const key = Object.keys(threeWeekdays)[idx];
-    day.textContent = translationObj.day[key];
-    day.setAttribute('data-i18n', `day.${key}`);
-  });
-  document.querySelectorAll('.forecast__temp').forEach((temp, idx) => {
-    temp.textContent = `${Math.round(threeDaysTemp[idx])}°`;
-  });
-  document.querySelector('#weather-icon-today').style.backgroundImage = `url('${iconsMap[dataWeatherCur.data[0].weather.icon]}')`;
-  document.querySelector('#forecast-icon-1').style.backgroundImage = `url('${iconsMap[threeDaysIcons[0]]}')`;
-  document.querySelector('#forecast-icon-2').style.backgroundImage = `url('${iconsMap[threeDaysIcons[1]]}')`;
-  document.querySelector('#forecast-icon-3').style.backgroundImage = `url('${iconsMap[threeDaysIcons[2]]}')`;
-  addActiveClassToLang();
-  addActiveClassToTemp();
-}
-
-async function getImage(partOfDay) {
-  console.log(season, partOfDay);
-  const url = 'https://api.unsplash.com/photos/random?orientation=landscape'
-    + `&per_page=1&query={${season}, ${partOfDay}}}&client_id=${imageKey}`;
-  return fetch(url)
-    .then((response) => response.json());
-}
-
-async function init() {
-  try {
-    const hrs = new Date().getHours();
-    const partOfDay = definepartOfDay(hrs);
-    const lang = localStorage.getItem('lang');
-    const { loc, city } = await getUserLocation();
-    const { results: [{ components: { country } }] } = await getLocationName(loc);
-    const { urls: { regular } } = await getImage(partOfDay);
-    const dataWeatherCur = await getCurrentWeather(loc);
-    const dataWeatherThreeDays = await getThreeDaysWeather(loc);
-    const cityChecked = await checkIfTranslationNeeded(city);
-    return {
-      cityChecked, country, regular, loc, dataWeatherCur, dataWeatherThreeDays,
-    };
-  } catch (err) {
-    console.log(err.message);
+  if (document.querySelector('.btn--cels').classList.contains('active')) {
+    document.querySelector('.btn--cels').classList.remove('active');
+    document.querySelector('.btn--fahr').classList.add('active');
   }
-}
-
-async function displayNewWeatherInfo(city, country, coord) {
-  try {
-    const lang = localStorage.getItem('lang');
-    const cityChecked = await checkIfTranslationNeeded(city);
-    showMapSearch(coord);
-    marker = addMarker(coord);
-    const dataWeatherCur = await getCurrentWeather(coord);
-    const { timezone } = dataWeatherCur.data[0];
-    const timeLocal = defineTimeInSearchPlace(timezone);
-    const hrs = timeLocal.slice(0, 2);
-    const partOfDay = definepartOfDay(hrs);
-    const { urls: { regular } } = await getImage(partOfDay);
-    const dataWeatherThreeDays = await getThreeDaysWeather(coord);
-    const imgElement = document.createElement('img');
-    imgElement.src = regular;
-    imgElement.addEventListener('load', () => {
-      renderWeatherInfo(cityChecked, country, dataWeatherCur, dataWeatherThreeDays, coord, regular);
-      defineDateInSearchPlace(timezone);
-      clearInterval(time);
-      time = setInterval(defineTimeInSearchPlace, 1000, timezone);
-      hideLoading();
+  if (localStorage.getItem('tempType') === 'M') {
+    tempCurr.textContent = `${convertToFahr(tempCurr.textContent)}°`;
+    const digit = findDigitInString(tempFeelsLike.textContent);
+    tempFeelsLike.textContent = `${translationObj.feel} ${convertToFahr(digit)}°`;
+    document.querySelectorAll('.forecast__temp').forEach((day, idx) => {
+      day.textContent = `${convertToFahr(day.textContent)}°`;
     });
-  } catch (err) {
-    console.log(err.message);
-  }
-}
-
-recognition.addEventListener('result', async (e) => {
-  const recognizedWord = e.results[0][0].transcript;
-  document.querySelector('.search__input').value = recognizedWord;
-  if (recognizedWord === 'погода') {
-    handleSpeechSynth();
-  } else if (recognizedWord === 'громче') {
-    utterance.volume += 0.5;
-  } else if (recognizedWord === 'тише') {
-    utterance.volume -= 0.5;
-  } else {
-    marker.remove();
-    showLoading();
-    const result = await getSearchLocation(recognizedWord);
-    displayNewWeatherInfo(result.city, result.country, result.geometry);
+    localStorage.setItem('tempType', 'I');
   }
 });
-
-async function changeImage() {
-  const hrs = document.querySelector('#time').textContent.slice(0, 2);
-  const partOfDay = definepartOfDay(hrs);
-  const { urls: { regular } } = await getImage(partOfDay);
-  document.body.style.backgroundImage = `linear-gradient(rgba(8, 15, 26, 0.6) 0%, rgba(17, 17, 46, 0.5) 100%), url(${regular})`;
-}
-
-document.querySelector('.btn--image').addEventListener('click', changeImage);
-
-function searchRandomLocationWeather() {
-  mapObj.on('click', async (evt) => {
-    const arrCoordinates = Object.values(evt.lngLat).reverse();
-    const { results: [{ components: { country, city } }] } = await getLocationName(arrCoordinates);
-    marker.remove();
-    showLoading();
-    displayNewWeatherInfo(city, country, arrCoordinates);
-  });
-}
-
-// form search
-document.querySelector('.search').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const keyWord = document.querySelector('.search__input').value;
-  if (!keyWord) {
-    return;
+document.querySelector('.btn--cels').addEventListener('click', () => {
+  const lang = localStorage.getItem('lang');
+  let translationObj;
+  if (lang === 'be') {
+    translationObj = translationBe;
+  } else if (lang === 'ru') {
+    translationObj = translationRu;
+  } else {
+    translationObj = translationEn;
   }
-  marker.remove();
-  showLoading();
-  const result = await getSearchLocation(keyWord);
-  const { city, country, geometry } = result;
-  displayNewWeatherInfo(city, country, geometry);
+  if (document.querySelector('.btn--fahr').classList.contains('active')) {
+    document.querySelector('.btn--fahr').classList.remove('active');
+    document.querySelector('.btn--cels').classList.add('active');
+  }
+  if (localStorage.getItem('tempType') === 'I') {
+    tempCurr.textContent = `${convertToCels(tempCurr.textContent)}°`;
+    const digit = findDigitInString(tempFeelsLike.textContent);
+    tempFeelsLike.textContent = `${translationObj.feel} ${convertToCels(digit)}°`;
+    document.querySelectorAll('.forecast__temp').forEach((day, idx) => {
+      day.textContent = `${convertToCels(day.textContent)}°`;
+    });
+    localStorage.setItem('tempType', 'M');
+  }
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.err').innerHTML = '';
   season = defineSeason();
   init().then((result) => {
     const imgElement = document.createElement('img');
     imgElement.src = result.regular;
     imgElement.addEventListener('load', () => {
-      document.body.classList.remove('loading');
-      document.querySelector('.header').classList.remove('hidden');
       const {
         cityChecked, country, regular, loc, dataWeatherCur, dataWeatherThreeDays,
       } = result;
@@ -488,15 +539,10 @@ window.addEventListener('DOMContentLoaded', () => {
       getTimeInUserLocation();
       time = setInterval(getTimeInUserLocation, 1000);
       mapObj = initMap(result.loc);
-      marker = addMarker(result.loc);
-      searchRandomLocationWeather();
+      document.body.classList.remove('loading');
+      document.querySelector('.header').classList.remove('hidden');
     });
-  });
+  })
+    .catch((err) => {
+    });
 });
-
-// TO-DO
-
-// уведомления об ошибках (плюс посмотреть PR) !
-// модули
-// тесты
-// editorsconfig

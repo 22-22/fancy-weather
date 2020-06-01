@@ -1,6 +1,6 @@
 function defineSeason() {
-  const seasonIdx = Math.floor(((new Date().getMonth() / 12) * 4)) % 4;
-  const seasons = ['winter', 'spring', 'summer', 'autumn'];
+  const seasonIdx = new Date().getMonth();
+  const seasons = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'];
   return seasons[seasonIdx];
 }
 
@@ -58,7 +58,7 @@ function defineDateInSearchPlace(timezone) {
   const monthNumber = new Date().toLocaleDateString(lang, { month: 'numeric', timeZone: timezone });
   document.querySelector('#month').setAttribute('data-i18n', `month.idx${monthNumber - 1}`);
   const weekdayShortNumber = new Date().toLocaleDateString(lang, { day: 'numeric', timeZone: timezone });
-  document.querySelector('#weekdayShort').setAttribute('data-i18n', `dayShort.idx${weekdayShortNumber - 1}`);
+  document.querySelector('#weekdayShort').setAttribute('data-i18n', `dayShort.idx${weekdayShortNumber}`);
 }
 
 export {

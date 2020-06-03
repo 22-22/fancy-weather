@@ -132,10 +132,7 @@ async function getSearchLocation(query) {
         hideLoading();
         throw new Error('No results');
       } else {
-        const { geometry, components } = result.results[0];
-        const city = `${components.city || components.town || components.village || components.county || components.state || ''}`;
-        const { country } = components;
-        return { city, country, geometry };
+        return result.results[0];
       }
     })
     .catch((err) => handleError(err));
@@ -178,7 +175,7 @@ async function getLocationName(location) {
       if (result.status.code !== 200) {
         throw new Error(result.status.message);
       } else {
-        return result;
+        return result.results[0];
       }
     })
     .catch((err) => handleError(err));
@@ -336,7 +333,7 @@ async function init() {
   const partOfDay = definepartOfDay(hrs);
   const lang = localStorage.getItem('lang');
   const { loc, city } = await getUserLocation();
-  const { results: [{ components: { country } }] } = await getLocationName(loc);
+  const { components: { country } } = await getLocationName(loc);
   const { regular } = await getImage(partOfDay);
   const dataWeatherCur = await getCurrentWeather(loc);
   const dataWeatherThreeDays = await getThreeDaysWeather(loc);
@@ -379,6 +376,13 @@ async function changeImage() {
   document.body.style.backgroundImage = `linear-gradient(rgba(8, 15, 26, 0.6) 0%, rgba(17, 17, 46, 0.5) 100%), url(${regular})`;
 }
 
+function filterSearchLocationResult(result) {
+  const { geometry, components } = result;
+  const city = `${components.city || components.town || components.village || components.county || components.state || ''}`;
+  const { country } = components;
+  return { city, country, geometry };
+}
+
 async function searchWeather(e) {
   try {
     e.preventDefault();
@@ -389,7 +393,7 @@ async function searchWeather(e) {
     marker.remove();
     showLoading();
     const result = await getSearchLocation(keyWord);
-    const { city, country, geometry } = result;
+    const { city, country, geometry } = filterSearchLocationResult(result);
     displayNewWeatherInfo(city, country, geometry);
   } catch (err) { }
 }
@@ -413,7 +417,8 @@ function initMap(location) {
   });
   mapObj.on('click', async (evt) => {
     const arrCoordinates = Object.values(evt.lngLat).reverse();
-    const { results: [{ components: { country, city } }] } = await getLocationName(arrCoordinates);
+    const result = await getLocationName(arrCoordinates);
+    const { city, country, geometry } = filterSearchLocationResult(result);
     marker.remove();
     showLoading();
     displayNewWeatherInfo(city, country, arrCoordinates);
@@ -447,7 +452,8 @@ recognition.addEventListener('result', async (e) => {
     marker.remove();
     showLoading();
     const result = await getSearchLocation(recognizedWord);
-    displayNewWeatherInfo(result.city, result.country, result.geometry);
+    const { city, country, geometry } = filterSearchLocationResult(result);
+    displayNewWeatherInfo(city, country, geometry);
   }
 });
 

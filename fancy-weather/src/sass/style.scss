@@ -434,6 +434,9 @@ body {
 .btn--info {
   margin-top: 20px;
 }
+.weather-forecast-container .forecast {
+  width: 37%;
+}
 }
 
 @media (max-width: 407px) {
@@ -457,6 +460,10 @@ body {
     
       .search__mic {
         right: 58px;
+      }
+
+      .location {
+        font-size: 2rem;
       }
 }
 

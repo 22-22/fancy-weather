@@ -1,5 +1,5 @@
 import {
-  locationKey, imageKey, weatherKey, geoCodingKey, mapKey, translationKey,
+  locationKey, imageKey, weatherKey, geoCodingKey, mapKey
 } from '../../api-keys';
 import {
   defineSeason, getTimeInUserLocation, getDateInUserLocation, definepartOfDay,
@@ -22,11 +22,6 @@ let time; let mapObj; let marker; let
 
 localStorage.setItem('lang', localStorage.getItem('lang') || 'en');
 localStorage.setItem('tempType', localStorage.getItem('tempType') || 'M');
-
-function isEnglish(value) {
-  const engNum = /[a-z]/i;
-  return engNum.test(value);
-}
 
 function handleError(err) {
   document.querySelector('.err').innerHTML = err;
@@ -91,20 +86,6 @@ function splitCoordinatesForRendering(coordinates) {
   return degreesMinutes;
 }
 
-async function fetchTranslation(query, lang) {
-  const urlTranslation = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${translationKey}&text=${query}&lang=${lang}`;
-  return fetch(urlTranslation)
-    .then((response) => response.json())
-    .then((translation) => {
-      if (translation.message) {
-        throw new Error(translation.message);
-      } else {
-        return translation.text;
-      }
-    })
-    .catch((err) => handleError(err));
-}
-
 async function getUserLocation() {
   const url = `https://ipinfo.io/json?token=${locationKey}`;
   return fetch(url)
@@ -120,7 +101,7 @@ async function getUserLocation() {
 }
 
 async function getSearchLocation(query) {
-  const lang = localStorage.getItem('lang');
+  const lang = 'en';
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${query}&language=${lang}&key=${geoCodingKey}`;
   return fetch(url)
     .then((response) => response.json())
@@ -154,20 +135,9 @@ function showMapSearch(location) {
   });
 }
 
-async function checkIfTranslationNeeded(word) {
-  const lang = localStorage.getItem('lang');
-  let wordChecked;
-  if (lang === 'en' && isEnglish(word)) {
-    wordChecked = word;
-  } else {
-    wordChecked = await fetchTranslation(word, lang);
-  }
-  return wordChecked;
-}
-
 async function getLocationName(location) {
   const coordinates = adjustCoordinates(location);
-  const lang = localStorage.getItem('lang');
+  const lang = 'en';
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${coordinates[0]}+${coordinates[1]}&language=${lang}&key=${geoCodingKey}`;
   return fetch(url)
     .then((response) => response.json())
@@ -232,7 +202,7 @@ function filterWeathThreeDays(data) {
   return { threeDaysTemp, threeWeekdays, threeDaysIcons };
 }
 
-function translateWithDictionaryObj(translationObj) {
+function translateWithDictionary(translationObj) {
   const wordsToTranslate = document.querySelectorAll('[data-i18n]');
   wordsToTranslate.forEach((word) => {
     if (word.textContent.includes(':')) {
@@ -250,19 +220,9 @@ function translateWithDictionaryObj(translationObj) {
   document.querySelector('.search__input').placeholder = translationObj.placeholder;
 }
 
-async function translateWithAPI() {
-  const lang = localStorage.getItem('lang');
-  const city = document.querySelector('.location').textContent.split(',')[0];
-  const country = document.querySelector('.location').textContent.split(',')[1];
-  const cityTranslated = await fetchTranslation(city, lang);
-  const countryTranslated = await fetchTranslation(country, lang);
-  const placeName = `${cityTranslated}, ${countryTranslated}`;
-  document.querySelector('.location').textContent = placeName;
-}
-
-function renderWeatherInfo(cityChecked, country, dataWeatherCur, weatherThreeDays, loc, image) {
+function renderWeatherInfo(city, country, dataWeatherCur, weatherThreeDays, loc, image) {
   try {
-    const placeName = `${cityChecked}, ${country}`;
+    const placeName = `${city}, ${country}`;
     const { threeDaysTemp, threeWeekdays, threeDaysIcons } = filterWeathThreeDays(weatherThreeDays);
     const lang = localStorage.getItem('lang');
     let translationObj;
@@ -337,16 +297,14 @@ async function init() {
   const { regular } = await getImage(partOfDay);
   const dataWeatherCur = await getCurrentWeather(loc);
   const dataWeatherThreeDays = await getThreeDaysWeather(loc);
-  const cityChecked = await checkIfTranslationNeeded(city);
   return {
-    cityChecked, country, regular, loc, dataWeatherCur, dataWeatherThreeDays,
+    city, country, regular, loc, dataWeatherCur, dataWeatherThreeDays,
   };
 }
 
 async function displayNewWeatherInfo(city, country, coord) {
   try {
     const lang = localStorage.getItem('lang');
-    const cityChecked = await checkIfTranslationNeeded(city);
     showMapSearch(coord);
     marker = addMarker(coord);
     const dataWeatherCur = await getCurrentWeather(coord);
@@ -359,7 +317,7 @@ async function displayNewWeatherInfo(city, country, coord) {
     const imgElement = document.createElement('img');
     imgElement.src = regular;
     imgElement.addEventListener('load', () => {
-      renderWeatherInfo(cityChecked, country, dataWeatherCur, dataWeatherThreeDays, coord, regular);
+      renderWeatherInfo(city, country, dataWeatherCur, dataWeatherThreeDays, coord, regular);
       defineDateInSearchPlace(timezone);
       clearInterval(time);
       time = setInterval(defineTimeInSearchPlace, 1000, timezone);
@@ -459,24 +417,21 @@ recognition.addEventListener('result', async (e) => {
 
 document.querySelector('.ru').addEventListener('click', () => {
   localStorage.setItem('lang', 'ru');
-  translateWithDictionaryObj(translationRu);
-  translateWithAPI();
+  translateWithDictionary(translationRu);
   const selector = '.ru';
   toggleActiveClass(selector);
 });
 
 document.querySelector('.en').addEventListener('click', () => {
   localStorage.setItem('lang', 'en');
-  translateWithDictionaryObj(translationEn);
-  translateWithAPI();
+  translateWithDictionary(translationEn);
   const selector = '.en';
   toggleActiveClass(selector);
 });
 
 document.querySelector('.be').addEventListener('click', () => {
   localStorage.setItem('lang', 'be');
-  translateWithDictionaryObj(translationBe);
-  translateWithAPI();
+  translateWithDictionary(translationBe);
   const selector = '.be';
   toggleActiveClass(selector);
 });
@@ -538,9 +493,9 @@ window.addEventListener('DOMContentLoaded', () => {
     imgElement.src = result.regular;
     imgElement.addEventListener('load', () => {
       const {
-        cityChecked, country, regular, loc, dataWeatherCur, dataWeatherThreeDays,
+        city, country, regular, loc, dataWeatherCur, dataWeatherThreeDays,
       } = result;
-      renderWeatherInfo(cityChecked, country, dataWeatherCur, dataWeatherThreeDays, loc, regular);
+      renderWeatherInfo(city, country, dataWeatherCur, dataWeatherThreeDays, loc, regular);
       getDateInUserLocation();
       getTimeInUserLocation();
       time = setInterval(getTimeInUserLocation, 1000);
